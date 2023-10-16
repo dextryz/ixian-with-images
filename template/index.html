@@ -1,0 +1,47 @@
+{{ block "content" . }}
+
+<!-- Form elements-->
+<section id="tables">
+<div class="container">
+<form action="/contact" method="get" class="tool-bar">
+    <hgroup>
+        <h2>Search Events</h2>
+        <h3>Use public key to list events</h3>
+    </hgroup>
+    <input
+        id="search"
+        type="search"
+        name="q"
+        placeholder="Public Key"
+        value="{{ .SearchQuery }}"
+        hx-get="/contact"
+        hx-trigger="search, keyup delay:200ms changed"
+        hx-target="tbody"
+        hx-push-url="true"
+        hx-select="tbody tr"
+    />
+    <input type="submit" value="Search"/>
+</form>
+</div>
+</section>
+<!-- Form elements-->
+
+<!-- Tables -->
+<section id="tables">
+    <table role="grid">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Id</th>
+            <th>Content</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            {{ template "contacts" . }}
+        </tbody>
+    </table>
+</section>
+<!-- ./ Tables -->
+
+{{ end }}

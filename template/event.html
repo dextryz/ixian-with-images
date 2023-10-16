@@ -1,0 +1,24 @@
+{{ block "contacts" . }}
+
+{{ range .Events }}
+<tr>
+    <td><input type="checkbox" name="selected_pubkeys" value="{{ .Id }}"></td>
+    <td>{{ .Id }}</td>
+    <td>{{ .Content }}</td>
+</tr>
+{{ end }}
+
+{{ if eq (len .Events) 10 }}
+<tr>
+    <td colspan="5" style="text-align: center">
+        <span hx-target="closest tr"
+                hx-swap="outerHTML"
+                hx-select="tbody > tr"
+                hx-get="/contact?page={{ add .Page 1 }}">
+          Load More
+        </span>
+    </td>
+</tr>
+{{ end }}
+
+{{ end }}
