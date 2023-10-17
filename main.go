@@ -15,9 +15,10 @@ func main() {
 		db: make(map[string]*nostr.Event),
 	}
 
-	for i := 0; i < 21; i++ {
+	for i := 0; i < 5; i++ {
 
 		p := &nostr.Event{
+			Id:      fmt.Sprintf("%d", i),
 			Content: fmt.Sprintf("alice%d", i),
 			Kind:    nostr.KindTextNote,
 			PubKey:  fmt.Sprintf("npub%d", i),
@@ -32,11 +33,8 @@ func main() {
 		repository: repository,
 	}
 
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
 	r.HandleFunc("/", handler.IndexHandler)
-	r.HandleFunc("/contact", handler.SearchProfile).Methods("GET")
+	r.HandleFunc("/contact", handler.ListEvents).Methods("GET")
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {

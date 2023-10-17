@@ -4,30 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ .Title }}</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.classless.min.css"
     />
-    <link rel="stylsheet" href="static/dashboard.css">
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 
 <body hx-boost="true">
-
-    <!-- Header -->
-    <header class="container">
-      <hgroup>
-        <h1>Ixian</h1>
-        <h2>Decentralized Knowledge Management</h2>
-      </hgroup>
-    </header>
-
-    <!-- Main -->
     <main class="container">
         {{ template "content" . }}
     </main>
-
 </body>
 
 </html>

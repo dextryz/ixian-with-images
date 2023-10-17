@@ -3,4 +3,7 @@ fmt:
 	gofmt -l -s -w .
 
 build:
-	go build -o ./ix ./*.go
+	go build -o ./nexus ./*.go
+
+run:
+	go run .

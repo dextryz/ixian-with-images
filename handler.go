@@ -1,30 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
-	"net/mail"
-	"net/url"
-	"strconv"
 
 	"github.com/ffiat/nostr"
-	"github.com/gorilla/mux"
 )
 
-// Define template with the functions
-var funcMap = template.FuncMap{
-	"subtract": func(a, b int) int { return a - b },
-	"add":      func(a, b int) int { return a + b },
-}
-
 type Data struct {
-	Title       string
-	Page        int
-	Content     string
-	Profiles    []*Profile
+	Events      []*nostr.Event
 	SearchQuery string
 }
 
@@ -36,50 +21,33 @@ func (s *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/contact", http.StatusMovedPermanently)
 }
 
-func (s *Handler) SearchProfile(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
-	page, contacts := s.paging(r.URL.Query().Get("page"))
+	log.Println("Searching")
 
 	search := r.URL.Query().Get("q")
+
+	data := Data{
+		SearchQuery: search,
+	}
+
 	if search != "" {
 		header := r.Header.Get("HX-Trigger")
 		if header == "search" {
 			log.Println("Header search FOUND")
-			contacts = s.repository.Search(search)
+			//events = s.repository.Find(search)
 		}
+	} else {
+		data.Events = s.repository.All()
 	}
 
-	tmpl, err := template.New("home").Funcs(funcMap).ParseFiles("template/layout.html", "template/index.html", "template/row.html")
+	tmpl, err := template.ParseFiles("template/home.html", "template/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	data := Data{
-		Page:        page,
-		Profiles:    contacts,
-		SearchQuery: search,
-	}
-	tmpl.ExecuteTemplate(w, "layout.html", data)
-}
 
-func (s *Handler) paging(pageStr string) (int, []*nostr.Event) {
+	log.Println(data)
 
-	page, _ := strconv.Atoi(pageStr)
-	if page < 1 {
-		page = 1
-	}
-
-	events := s.repository.All()
-
-	if len(events) == 0 {
-		log.Fatalln("no events found")
-	}
-
-	startIndex := (page - 1) * 10
-	endIndex := startIndex + 10
-	if endIndex > len(events) {
-		endIndex = len(events)
-	}
-
-	return page, events[startIndex:endIndex]
+	tmpl.ExecuteTemplate(w, "home.html", data)
 }
