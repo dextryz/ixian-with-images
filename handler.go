@@ -29,7 +29,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if search != "" {
-		data.Events = s.repository.Find(search)
+		data.Events = s.repository.FindByPubKey(search)
 	} else {
 		data.Events = s.repository.All()
 	}
