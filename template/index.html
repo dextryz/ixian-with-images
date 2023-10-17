@@ -3,12 +3,17 @@
 <!-- Form elements-->
 <section id="form">
     <form>
-        <input id="search" name="q" type="search" placeholder="Public Key">
-        <button hx-post="/contact"
-                hx-target="#main"
-                hx-include="#search">
-            Pull Events
-        </button>
+        <input
+            id="search"
+            name="pubkey"
+            type="search"
+            placeholder="Public Key"
+            value="{{ .SearchQuery }}"
+            hx-get="/events"
+            hx-trigger="change, keyup delay:200ms changed"
+            hx-target="tbody"
+            hx-select="tbody tr"/>
+        <input type="submit" value="Search"/>
     </form>
 </section>
 <!-- Form elements-->

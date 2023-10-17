@@ -23,6 +23,8 @@ func (s *Repository) All() []*nostr.Event {
 	return events
 }
 
-func (s *Repository) Find(id string) (*nostr.Event, error) {
-	return s.db[id], nil
+func (s *Repository) Find(id string) []*nostr.Event {
+	var events []*nostr.Event
+	events = append(events, s.db[id])
+	return events
 }

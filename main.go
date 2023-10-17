@@ -34,7 +34,7 @@ func main() {
 	}
 
 	r.HandleFunc("/", handler.IndexHandler)
-	r.HandleFunc("/contact", handler.ListEvents).Methods("GET")
+	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
