@@ -28,6 +28,8 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		SearchQuery: search,
 	}
 
+	// TODO: Validate PubKey similar to email validation.
+
 	if search != "" {
 		data.Events = s.repository.FindByPubKey(search)
 	} else {

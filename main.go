@@ -32,9 +32,19 @@ func main() {
 		log.Fatalf("unable to decode local cfg: %v", err)
 	}
 
+	websockets := make([]*Connection, 0)
+	for _, v := range cfg.Relays {
+		cc := NewConnection(v)
+		err := cc.Listen()
+		if err != nil {
+			log.Fatalf("unable to listen to relay: %v", err)
+		}
+		websockets = append(websockets, cc)
+	}
+
 	repository := Repository{
-		db:  make(map[string]*nostr.Event),
-		cfg: cfg,
+		db: make(map[string]*nostr.Event),
+		ws: websockets,
 	}
 
 	handler := Handler{
@@ -65,6 +75,10 @@ func main() {
 	// Create a context with a timeout for the server's shutdown process
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	// TODO: Close Repository
+	// - Closes all WS connections
+	// - Closes all subscriptions channels
 
 	if err = server.Shutdown(ctx); err != nil {
 		log.Fatalf("Server Shutdown Failed:%+v", err)

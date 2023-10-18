@@ -197,6 +197,9 @@ func (s *Connection) Subscribe(filters nostr.Filters) (*Subscription, error) {
 // Disconnect from the WebSocket server
 func (s *Connection) Close() {
 	log.Println("Closing connection")
+
+	// TODO: Close all subscriptions before closing WS connection.
+
 	err := s.socket.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	if err != nil {
 		log.Println("write close:", err)
