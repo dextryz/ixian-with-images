@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"text/template"
 	"net/http"
 	"regexp"
+	"sort"
+	"text/template"
 
 	"github.com/ffiat/nostr"
 )
@@ -46,8 +46,12 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
     // Apply CSS styling to event content.
     for _, e := range data.Events {
         e.Content = BoldHashtags(e.Content)
-        fmt.Println(e.Content)
     }
+
+    // Newest to latest
+    sort.Slice(data.Events, func(i, j int) bool {
+		return data.Events[i].CreatedAt > data.Events[j].CreatedAt
+	})
 
 	tmpl, err := template.ParseFiles("template/home.html", "template/index.html")
 	if err != nil {

@@ -108,21 +108,15 @@ func (s *Connection) Listen() error {
 
 			switch msg.Type() {
 			case "EVENT":
-
-				log.Println("Incoming message Read")
-
-				m := msg.(*nostr.MessageEvent)
-
 				// Dispatch event to inmem subscription channel.
+				m := msg.(*nostr.MessageEvent)
 				if sub, ok := s.subscriptions[m.GetSubId()]; ok {
 					sub.EventStream <- &m.Event
 				}
-
-				// Show relay response status after publishing an event.
+            // Show relay response status after publishing an event.
 			case "OK":
 				ok := msg.(*nostr.MessageOk)
 				s.okStream <- *ok
-
 			// Close is end of new events.
 			case "EOSE":
 
