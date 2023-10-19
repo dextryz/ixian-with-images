@@ -9,6 +9,8 @@ View your [nostr](https://nostr.com/) events without the noise.
 
 ## TODO
 
+- [ ] Search NIP-05 profiles using HTMX active search
+- [ ] Manage hyper links in event content
 - [ ] Public key verification
 - [ ] Add event ID in smaller and greyed out text
 - [X] Add list of relays to local config

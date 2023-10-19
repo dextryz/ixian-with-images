@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"regexp"
 	"sort"
@@ -12,6 +13,8 @@ import (
 type Data struct {
 	Events      []*nostr.Event
 	SearchQuery string
+    Error string
+    Invalid bool
 }
 
 type Handler struct {
@@ -19,7 +22,7 @@ type Handler struct {
 }
 
 func (s *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/events", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/home", http.StatusMovedPermanently)
 }
 
 func BoldHashtags(content string) string {
@@ -27,20 +30,52 @@ func BoldHashtags(content string) string {
 	return re.ReplaceAllString(content, "<b>#$1</b>")
 }
 
-func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
-	search := r.URL.Query().Get("pubkey")
+	data := Data{}
 
-	data := Data{
-		SearchQuery: search,
+	tmpl, err := template.ParseFiles("template/home.html", "template/index.html", "template/events.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	// TODO: Validate PubKey similar to email validation.
+	tmpl.ExecuteTemplate(w, "home.html", data)
+}
 
-	if search != "" {
-		data.Events = s.repository.FindByPubKey(search)
-	} else {
-		data.Events = s.repository.All()
+func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
+
+    log.Println("PubKey")
+
+	pk := r.URL.Query().Get("pubkey")
+
+	if pk != "" {
+
+        _, err := nostr.DecodeBech32(pk)
+        if err != nil {
+            w.WriteHeader(http.StatusOK)
+            w.Write([]byte("invalid npub"))
+            return
+        }
+	}
+}
+
+func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
+
+	pk := r.URL.Query().Get("pubkey")
+
+	data := Data{}
+
+	if pk != "" {
+
+        pk, err := nostr.DecodeBech32(pk)
+        if err != nil {
+            w.WriteHeader(http.StatusOK)
+            w.Write([]byte("invalid npub"))
+            return
+        }
+
+		data.Events = s.repository.FindByPubKey(pk.(string))
 	}
 
     // Apply CSS styling to event content.
@@ -53,11 +88,13 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		return data.Events[i].CreatedAt > data.Events[j].CreatedAt
 	})
 
-	tmpl, err := template.ParseFiles("template/home.html", "template/index.html")
+    log.Println(len(data.Events))
+
+	tmpl, err := template.ParseFiles("template/events.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "home.html", data)
+	tmpl.Execute(w, data)
 }

@@ -36,20 +36,12 @@ func (s *Repository) All() []*nostr.Event {
 }
 
 // TODO: Cache the pulled events.
-func (s *Repository) FindByPubKey(key string) []*nostr.Event {
-
-	log.Printf("Finding by Pubjey with id: %s\n", key)
+func (s *Repository) FindByPubKey(pk string) []*nostr.Event {
 
 	var events []*nostr.Event
 
-	pk, err := nostr.DecodeBech32(key)
-	if err != nil {
-		log.Fatalf("\nunable to decode npub: %#v", err)
-	}
-
-	// List only the latest 3 event from the author.
 	f := nostr.Filter{
-		Authors: []string{pk.(string)},
+		Authors: []string{pk},
 		Kinds:   []uint32{nostr.KindTextNote},
 		Limit:   10,
 	}
@@ -87,24 +79,6 @@ func (s *Repository) FindByPubKey(key string) []*nostr.Event {
 
 		//cc.Close()
 	}
-
-	log.Println("event added to local cache")
-	log.Println(events)
-
-	return events
-}
-
-// TODO: Cache the pulled events.
-func (s *Repository) FindByEventId(id string) []*nostr.Event {
-
-	log.Printf("Finding event with id: %s\n", id)
-
-	var events []*nostr.Event
-	// 	f := nostr.Filter{
-	// 		Ids:   []string{id},
-	// 		Kinds: []uint32{nostr.KindTextNote},
-	// 		Limit: 10,
-	// 	}
 
 	return events
 }

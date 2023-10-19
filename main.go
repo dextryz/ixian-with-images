@@ -52,7 +52,12 @@ func main() {
 	}
 
 	r := mux.NewRouter()
+
+    r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))
+
 	r.HandleFunc("/", handler.IndexHandler)
+	r.HandleFunc("/home", handler.Home).Methods("GET")
+	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
 
 	server := &http.Server{

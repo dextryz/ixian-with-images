@@ -1,0 +1,9 @@
+{{ block "events" . }}
+
+{{ range .Events }}
+    <article id="event">
+        <p>{{ .Content }}</p>
+    </article>
+{{ end }}
+
+{{ end }}
