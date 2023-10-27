@@ -22,28 +22,31 @@ p, h1, h2, h3, h4, h5, h6 {
 /* ---------------------------------------------------- */
 
 body {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-evenly;
-    align-content: center;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 16px;
     text-align: center;
-    background-color: #002b36; /* base03 */
+    background: #002b36; /* base03 */
     line-height: 1.5;
     padding: 2rem;
     gap: 2rem;
-    -webkit-font-smoothing: antialiased;
 }
 
 main {
-    display: flex;
-    flex-flow: row wrap;
+    --column-count: 1;
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), minmax(20em, 1fr));
     gap: 1rem;
 }
 
+@media (min-width: 40em) {
+    main { --column-count: 2; }
+}
+
+@media (min-width: 60em) {
+    main { --column-count: 3; }
+}
+
 main > * {
-    max-width: 30rem;
     color: #93a1a1;
     background: #073642;
     border-radius: 10px;
@@ -56,18 +59,17 @@ main > * {
 
 .search-container {
     display: flex;
-    justify-content: center;
     gap: 1rem;
 }
 
 .search-field {
-    font-size: 18px;
+    font-size: 16px;
     width: 500px;
     height: 40px;
     padding: 10px;
     border: 1px solid #586e75;
     color: #93a1a1;
-    background-color: #073642;
+    background: #073642;
     border-radius: 10px;
 }
 
@@ -82,12 +84,4 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
     background-color: #2aa198;
-}
-
-.profile {
-    flex: 1;
-    color: #93a1a1;
-    background-color: #073642;
-    border: 1px solid #586e75;
-    border-radius: 10px;
 }
