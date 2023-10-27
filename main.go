@@ -53,7 +53,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-    r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("./css"))))
+    r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	r.HandleFunc("/", handler.IndexHandler)
 	r.HandleFunc("/home", handler.Home).Methods("GET")

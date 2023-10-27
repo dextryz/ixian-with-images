@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap">
+    <link rel="stylesheet" href="/static/style.css" type="text/css">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body hx-boost="true">
+
+    <form class="search-container"
+        hx-get="/events"
+        hx-target="main"
+        hx-swap="innerHTML">
+
+        <input class="search-field" id="search" name="pubkey" placeholder="Public Key"
+            hx-get="/validate"
+            hx-target="next .error"
+            hx-trigger="keyup delay:200ms changed"
+        />
+        <small class="error"></small>
+        <input type="submit" value=""/>
+    </form>
+
+    <main>
+        {{ template "events" . }}
+    </main>
+
+</body>
+
+</html>
+

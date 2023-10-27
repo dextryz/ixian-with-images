@@ -1,0 +1,93 @@
+/*
+  Josh's Custom CSS Reset
+  https://www.joshwcomeau.com/css/custom-css-reset/
+*/
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+}
+
+input, button, textarea, select {
+    font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+}
+
+/* ---------------------------------------------------- */
+
+body {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    text-align: center;
+    background-color: #002b36; /* base03 */
+    line-height: 1.5;
+    padding: 2rem;
+    gap: 2rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+main {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+}
+
+main > * {
+    max-width: 30rem;
+    color: #93a1a1;
+    background: #073642;
+    border-radius: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #586e75;
+    text-align: left;
+    padding: 10px 30px 10px 30px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.search-field {
+    font-size: 18px;
+    width: 500px;
+    height: 40px;
+    padding: 10px;
+    border: 1px solid #586e75;
+    color: #93a1a1;
+    background-color: #073642;
+    border-radius: 10px;
+}
+
+input[type="submit"] {
+    width: 40px;
+    height: 40px;
+    background-color: #6c71c4;
+    border: 1px solid #586e75;
+    cursor: pointer; /* cursor changes to hand when hovered */
+    border-radius: 10px;
+}
+
+input[type="submit"]:hover {
+    background-color: #2aa198;
+}
+
+.profile {
+    flex: 1;
+    color: #93a1a1;
+    background-color: #073642;
+    border: 1px solid #586e75;
+    border-radius: 10px;
+}

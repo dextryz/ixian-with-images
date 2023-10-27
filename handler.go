@@ -34,7 +34,7 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 	data := Data{}
 
-	tmpl, err := template.ParseFiles("template/home.html", "template/index.html", "template/events.html")
+	tmpl, err := template.ParseFiles("static/home.html", "static/index.html", "static/events.html", "static/notify.html", "static/profile.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -61,6 +61,8 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
+
+    log.Println("Listing events")
 
 	pk := r.URL.Query().Get("pubkey")
 
@@ -90,7 +92,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
     log.Println(len(data.Events))
 
-	tmpl, err := template.ParseFiles("template/events.html")
+	tmpl, err := template.ParseFiles("static/events.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
