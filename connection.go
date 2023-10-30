@@ -113,7 +113,7 @@ func (s *Connection) Listen() error {
 				if sub, ok := s.subscriptions[m.GetSubId()]; ok {
 					sub.EventStream <- &m.Event
 				}
-            // Show relay response status after publishing an event.
+				// Show relay response status after publishing an event.
 			case "OK":
 				ok := msg.(*nostr.MessageOk)
 				s.okStream <- *ok

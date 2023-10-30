@@ -42,9 +42,9 @@ func (s *Repository) FindByPubKey(pk string) []*nostr.Event {
 
 	f := nostr.Filter{
 		Authors: []string{pk},
-		Kinds:   []uint32{1}, // KindArticle
-		//Kinds:   []uint32{30023}, // KindArticle
-		Limit:   10,
+		//Kinds:   []uint32{1}, // KindArticle
+		Kinds: []uint32{30023}, // KindArticle
+		Limit: 10,
 	}
 
 	// Subscribe the PubKey to every open connection to a relay.

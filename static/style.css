@@ -22,10 +22,12 @@ p, h1, h2, h3, h4, h5, h6 {
 /* ---------------------------------------------------- */
 
 body {
+    display: flex;
+    flex-flow: column;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 16px;
     text-align: center;
-    background: #002b36; /* base03 */
+    background: #262626;
     line-height: 1.5;
     padding: 2rem;
     gap: 2rem;
@@ -34,22 +36,95 @@ body {
 main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
-main > * {
+.article-card {
+    display: flex;
+    flex-flow: column;
     color: #93a1a1;
-    background: #073642;
-    border-radius: 10px;
-    border-width: 1px;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    background: white;
+    border-width: 0px;
     border-style: solid;
     border-color: #586e75;
     text-align: left;
-    padding: 10px 30px 10px 30px;
+    transition: 0.2s;
+}
+
+.article-card:hover {
+    transform: translateY(-1rem);
+}
+
+.article-body {
+    display: flex;
+    flex-flow: column;
+    flex: 1;
+    position: relative;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+img.article-thumbnail {
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    border-width: 0px;
+    height: 250px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.article-header {
+    color: black;
+    font-size: x-large;
+    font-weight: bold;
+    text-align: center;
+}
+
+.article-header:hover {
+    background: linear-gradient(90deg,#ff8a00,#e52e71);
+    text-shadow: none;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.article-tags {
+    text-align: center;
+}
+
+.article-author {
+    -webkit-margin-before: auto;
+    margin-block-start: auto;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+.profile {
+    width: 60px;
+    height: 60px;
+    border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
+    transition: border-radius 200ms ease-in-out;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    /*filter: grayscale(100%);*/
+}
+
+.profile:hover {
+    border-radius: 50%;
+}
+
+.author-name {
+    color: black;
 }
 
 .search-container {
     display: flex;
+    justify-content: center;
     gap: 1rem;
 }
 

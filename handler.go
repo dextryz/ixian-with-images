@@ -6,15 +6,26 @@ import (
 	"regexp"
 	"sort"
 	"text/template"
+	"time"
 
 	"github.com/ffiat/nostr"
 )
 
+type Article struct {
+	Id        string
+	Image     string
+	Title     string
+	Tags      []string
+	Content   string
+	CreatedAt string
+	PubKey    string // TODO: change to author with NIP-05
+}
+
 type Data struct {
 	Events      []*nostr.Event
 	SearchQuery string
-    Error string
-    Invalid bool
+	Error       string
+	Invalid     bool
 }
 
 type Handler struct {
@@ -34,7 +45,7 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 	data := Data{}
 
-	tmpl, err := template.ParseFiles("static/home.html", "static/index.html", "static/events.html", "static/notify.html", "static/profile.html")
+	tmpl, err := template.ParseFiles("static/home.html", "static/index.html", "static/article.html", "static/notify.html", "static/profile.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -45,58 +56,83 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
 func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 
-    log.Println("PubKey")
+	log.Println("PubKey")
 
 	pk := r.URL.Query().Get("pubkey")
 
 	if pk != "" {
 
-        _, err := nostr.DecodeBech32(pk)
-        if err != nil {
-            w.WriteHeader(http.StatusOK)
-            w.Write([]byte("invalid npub"))
-            return
-        }
+		_, err := nostr.DecodeBech32(pk)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("invalid npub"))
+			return
+		}
 	}
 }
 
 func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
-    log.Println("Listing events")
+	log.Println("Listing events")
 
-	pk := r.URL.Query().Get("pubkey")
+	npub := r.URL.Query().Get("pubkey")
 
-	data := Data{}
-
-	if pk != "" {
-
-        pk, err := nostr.DecodeBech32(pk)
-        if err != nil {
-            w.WriteHeader(http.StatusOK)
-            w.Write([]byte("invalid npub"))
-            return
-        }
-
-		data.Events = s.repository.FindByPubKey(pk.(string))
+	events := []*nostr.Event{}
+	if npub != "" {
+		pk, err := nostr.DecodeBech32(npub)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("invalid npub"))
+			return
+		}
+		events = s.repository.FindByPubKey(pk.(string))
 	}
 
-    // Apply CSS styling to event content.
-    for _, e := range data.Events {
-        e.Content = BoldHashtags(e.Content)
-    }
-
-    // Newest to latest
-    sort.Slice(data.Events, func(i, j int) bool {
-		return data.Events[i].CreatedAt > data.Events[j].CreatedAt
+	// Newest to latest
+	sort.Slice(events, func(i, j int) bool {
+		return events[i].CreatedAt > events[j].CreatedAt
 	})
 
-    log.Println(len(data.Events))
+	// Apply CSS styling to event content.
+	articles := []Article{}
+	for _, e := range events {
 
-	tmpl, err := template.ParseFiles("static/events.html")
+		// Sample Unix timestamp: 1635619200 (represents 2021-10-30)
+		unixTimestamp := int64(e.CreatedAt)
+
+		// Convert Unix timestamp to time.Time
+		t := time.Unix(unixTimestamp, 0)
+
+		// Format time.Time to "yyyy-mm-dd"
+		createdAt := t.Format("2006-01-02")
+
+		a := Article{
+			Id:        e.Id,
+			Content:   e.Content,
+			CreatedAt: createdAt,
+			PubKey:    npub[:15],
+		}
+
+		for _, t := range e.Tags {
+			if t.Key() == "image" {
+				a.Image = t.Value()
+			}
+			if t.Key() == "title" {
+				a.Title = t.Value()
+			}
+			if t.Key() == "t" {
+				a.Tags = append(a.Tags, t.Value())
+			}
+		}
+
+		articles = append(articles, a)
+	}
+
+	tmpl, err := template.ParseFiles("static/article.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.Execute(w, data)
+	tmpl.Execute(w, articles)
 }
