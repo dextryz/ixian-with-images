@@ -13,9 +13,9 @@
                 {{ end }}
             </div>
             <section class="article-author">
-                <img class="profile" src="{{ .Image }}" />
+                <img class="profile" src="{{ .Profile.Picture }}" />
                 <div>
-                    <b class="author-name">{{ .PubKey }}</b>
+                    <b class="author-name">{{ .Profile.Name }}</b>
                     on
                     <time datetime> {{ .CreatedAt }} </time>
                 </div>

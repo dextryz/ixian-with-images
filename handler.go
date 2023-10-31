@@ -19,6 +19,7 @@ type Article struct {
 	Content   string
 	CreatedAt string
 	PubKey    string // TODO: change to author with NIP-05
+    Profile *nostr.Profile
 }
 
 type Data struct {
@@ -77,6 +78,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
 	npub := r.URL.Query().Get("pubkey")
 
+    profile := nostr.Event{}
 	events := []*nostr.Event{}
 	if npub != "" {
 		pk, err := nostr.DecodeBech32(npub)
@@ -85,6 +87,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("invalid npub"))
 			return
 		}
+        profile = *s.repository.FindProfile(pk.(string))
 		events = s.repository.FindByPubKey(pk.(string))
 	}
 
@@ -93,8 +96,13 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		return events[i].CreatedAt > events[j].CreatedAt
 	})
 
+    p, err := nostr.ParseMetadata(profile)
+    if err != nil {
+        log.Fatalln(err)
+    }
+
 	// Apply CSS styling to event content.
-	articles := []Article{}
+    articles := []*Article{}
 	for _, e := range events {
 
 		// Sample Unix timestamp: 1635619200 (represents 2021-10-30)
@@ -110,6 +118,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			Id:        e.Id,
 			Content:   e.Content,
 			CreatedAt: createdAt,
+            Profile: p,
 			PubKey:    npub[:15],
 		}
 
@@ -125,7 +134,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		articles = append(articles, a)
+		articles = append(articles, &a)
 	}
 
 	tmpl, err := template.ParseFiles("static/article.html")

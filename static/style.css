@@ -51,10 +51,12 @@ main {
     border-color: #586e75;
     text-align: left;
     transition: 0.2s;
+    transition: 1000ms;
 }
 
 .article-card:hover {
-    transform: translateY(-1rem);
+    transform: translateY(-2rem);
+    transition: 250ms;
 }
 
 .article-body {
@@ -107,7 +109,7 @@ img.article-thumbnail {
     width: 60px;
     height: 60px;
     border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
-    transition: border-radius 200ms ease-in-out;
+    transition: border-radius 250ms ease-in-out;
     border-width: 2px;
     border-style: solid;
     border-color: black;
