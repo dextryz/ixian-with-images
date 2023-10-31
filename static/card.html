@@ -5,7 +5,8 @@
     <article class="article-card"
         hx-get="article/{{ .Id }}"
         hx-push-url="true"
-        hx-target="body">
+        hx-target="body"
+        hx-swap="outerHTML">
 
         <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
 

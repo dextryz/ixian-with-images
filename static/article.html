@@ -1,26 +1,12 @@
 {{ block "article" . }}
 
-<article class="article-page">
+<article class="article">
 
-    <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
+    <img src="{{ .Image }}" />
 
-    <div class="article-body">
-
-        <header>
-            {{ .Title }}
-        </header>
-
-        <div class="article-tags">
-            {{ range .Tags }}
-                <b>{{ . }}</b>
-            {{ end }}
-        </div>
-
-        <section>
-            {{ .Content }}
-        </section>
-    </div>
-
+    <section class="content">
+        {{ .Content }}
+    </section>
 
 </article>
 
