@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ffiat/nostr"
 	"github.com/gorilla/mux"
 )
 
@@ -43,7 +42,7 @@ func main() {
 	}
 
 	repository := Repository{
-		db: make(map[string]*nostr.Event),
+		db: make(map[string]*Article),
 		ws: websockets,
 	}
 

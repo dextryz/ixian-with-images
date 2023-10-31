@@ -1,8 +1,26 @@
 {{ block "article" . }}
 
-<article>
+<article class="article-page">
 
-    {{ .Content }}
+    <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
+
+    <div class="article-body">
+
+        <header>
+            {{ .Title }}
+        </header>
+
+        <div class="article-tags">
+            {{ range .Tags }}
+                <b>{{ . }}</b>
+            {{ end }}
+        </div>
+
+        <section>
+            {{ .Content }}
+        </section>
+    </div>
+
 
 </article>
 

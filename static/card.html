@@ -7,19 +7,19 @@
         hx-push-url="true"
         hx-target="body">
 
-        <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
+        <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
 
-        <div class="article-body">
-            <header class="article-header">
+        <div class="card-body">
+            <header>
                 {{ .Title }}
             </header>
-            <div class="article-tags">
+            <div class="card-tags">
                 {{ range .Tags }}
                     <b>{{ . }}</b>
                 {{ end }}
             </div>
-            <section class="article-author">
-                <img class="profile" src="{{ .Profile.Picture }}" />
+            <section class="profile">
+                <img src="{{ .Profile.Picture }}" />
                 <div>
                     <b class="author-name">{{ .Profile.Name }}</b>
                     <time datetime> {{ .CreatedAt }} </time>
