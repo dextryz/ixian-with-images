@@ -1,0 +1,32 @@
+{{ block "events" . }}
+
+{{ range . }}
+
+    <article class="article-card"
+        hx-get="article/{{ .Id }}"
+        hx-push-url="true"
+        hx-target="body">
+
+        <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
+
+        <div class="article-body">
+            <header class="article-header">
+                {{ .Title }}
+            </header>
+            <div class="article-tags">
+                {{ range .Tags }}
+                    <b>{{ . }}</b>
+                {{ end }}
+            </div>
+            <section class="article-author">
+                <img class="profile" src="{{ .Profile.Picture }}" />
+                <div>
+                    <b class="author-name">{{ .Profile.Name }}</b>
+                    <time datetime> {{ .CreatedAt }} </time>
+                </div>
+            </section>
+        </div>
+    </article>
+{{ end }}
+
+{{ end }}

@@ -1,26 +1,9 @@
-{{ block "events" . }}
+{{ block "article" . }}
 
-{{ range . }}
-    <article id="article-{{ .Id }}" class="article-card">
-        <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
-        <div class="article-body">
-            <header class="article-header">
-                {{ .Title }}
-            </header>
-            <div class="article-tags">
-                {{ range .Tags }}
-                    <b>{{ . }}</b>
-                {{ end }}
-            </div>
-            <section class="article-author">
-                <img class="profile" src="{{ .Profile.Picture }}" />
-                <div>
-                    <b class="author-name">{{ .Profile.Name }}</b>
-                    <time datetime> {{ .CreatedAt }} </time>
-                </div>
-            </section>
-        </div>
-    </article>
-{{ end }}
+<article>
+
+    {{ .Content }}
+
+</article>
 
 {{ end }}
