@@ -29,8 +29,8 @@ body {
     text-align: center;
     background: #262626;
     line-height: 1.5;
-    padding: 2rem;
-    gap: 2rem;
+    padding: 4rem;
+    gap: 4rem;
 }
 
 main {
@@ -55,7 +55,7 @@ main {
 }
 
 .article-card:hover {
-    transform: translateY(-2rem);
+    transform: translateY(-1rem);
     transition: 250ms;
 }
 
@@ -109,7 +109,7 @@ img.article-thumbnail {
     width: 60px;
     height: 60px;
     border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
-    transition: border-radius 250ms ease-in-out;
+    transition: border-radius 300ms ease-in-out;
     border-width: 2px;
     border-style: solid;
     border-color: black;
@@ -124,32 +124,26 @@ img.article-thumbnail {
     color: black;
 }
 
-.search-container {
+.search-bar {
     display: flex;
     justify-content: center;
-    gap: 1rem;
 }
 
-.search-field {
-    font-size: 16px;
+input[type=search] {
     width: 500px;
-    height: 40px;
-    padding: 10px;
-    border: 1px solid #586e75;
-    color: #93a1a1;
-    background: #073642;
-    border-radius: 10px;
+    padding: 8px 15px 8px 15px;
+    border: 0;
+    font-size: 16px;
+    border-radius: 20px;
+    background: snow;
+    background-position: 2% 50%;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    transition: 0.5s all ease-in-out;
 }
 
-input[type="submit"] {
-    width: 40px;
-    height: 40px;
-    background-color: #6c71c4;
-    border: 1px solid #586e75;
-    cursor: pointer; /* cursor changes to hand when hovered */
-    border-radius: 10px;
-}
-
-input[type="submit"]:hover {
-    background-color: #2aa198;
+input[type=search]:focus {
+    width: 1000px;
+    background: snow;
+    border: 0;
 }
