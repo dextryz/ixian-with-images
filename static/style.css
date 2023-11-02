@@ -23,8 +23,12 @@ p, h1, h2, h3, h4, h5, h6 {
 
 :root {
     --clr-black: #1E2227;
+    --clr-green: #98C379;
     --clr-red: #E06C75;
+    --clr-yellow: #E5C07B;
     --clr-blue: #61AFEF;
+    --clr-pink: #C678DD;
+    --clr-cyan: #56B6C2;
 }
 
 body {
@@ -38,7 +42,7 @@ body {
     display: flex;
     justify-content: center;
     background: var(--clr-black);
-    padding-top: 2rem;
+    padding: 2rem 2rem 0rem 2rem;
 }
 
 input[type=search] {
@@ -62,7 +66,7 @@ input[type=search]:focus {
 
 main {
     display: block;
-    padding: 2rem;
+    padding: 3rem;
     background: var(--clr-black);
 }
 
@@ -97,6 +101,8 @@ main {
     text-align: left;
     max-width: 50rem;
     gap: 2rem;
+    margin-inline: auto;
+    width: min(90%, 1000px);
 }
 
 .content h2 {
