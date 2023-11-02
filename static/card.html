@@ -1,5 +1,6 @@
 {{ block "events" . }}
 
+{{ if . }}
 {{ range . }}
 
     <article class="article-card"
@@ -28,6 +29,7 @@
             </section>
         </div>
     </article>
+{{ end }}
 {{ end }}
 
 {{ end }}

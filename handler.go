@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"text/template"
@@ -28,10 +29,10 @@ func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	a, err := s.repository.Article(vars["id"])
-    if err != nil {
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-    }
+	}
 
 	tmpl, err := template.ParseFiles("static/article.html")
 	if err != nil {
@@ -44,15 +45,17 @@ func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
-	data := Data{}
-
 	tmpl, err := template.ParseFiles("static/home.html", "static/card.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "home.html", data)
+    articles := []*Article{}
+	err = tmpl.ExecuteTemplate(w, "home.html", articles)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+	}
 }
 
 func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
@@ -73,21 +76,21 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
 	npub := r.URL.Query().Get("pubkey")
 	if npub == "" {
-        log.Fatalln("no npub provided")
-    }
+		log.Fatalln("no npub provided")
+	}
 
-    pk, err := nostr.DecodeBech32(npub)
-    if err != nil {
-        w.WriteHeader(http.StatusOK)
-        w.Write([]byte("invalid npub"))
-        return
-    }
+	pk, err := nostr.DecodeBech32(npub)
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("invalid npub"))
+		return
+	}
 
-    articles, err := s.repository.FindArticles(pk.(string))
-    if err != nil {
+	articles, err := s.repository.FindArticles(pk.(string))
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-    }
+	}
 
 	tmpl, err := template.ParseFiles("static/card.html")
 	if err != nil {

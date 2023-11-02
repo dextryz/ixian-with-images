@@ -21,17 +21,24 @@ p, h1, h2, h3, h4, h5, h6 {
 
 /* ---------------------------------------------------- */
 
+:root {
+    --clr-red: #E06C75;
+    --clr-blue: #61AFEF;
+    --clr-black: #1E2227;
+}
+
 body {
-    display: flex;
-    flex-flow: column;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 16px;
+    background: #1E2227;
     line-height: 1.5;
 }
 
 .search-bar {
     display: flex;
     justify-content: center;
+    background: #1E2227;
+    padding-top: 2rem;
 }
 
 input[type=search] {
@@ -51,6 +58,19 @@ input[type=search]:focus {
     width: 1000px;
     background: snow;
     border: 0;
+}
+
+main {
+    display: block;
+    padding: 2rem;
+    background: #1E2227;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+    gap: 2rem;
+    background: #1E2227;
 }
 
 .article {
@@ -85,7 +105,7 @@ input[type=search]:focus {
 }
 
 a {
-    color: #C678DD;
+    color: var(--clr-blue);
     text-decoration: none; /* Removes the underline */
 }
 
@@ -97,15 +117,6 @@ a:visited {
 /* Changing the color when the link is hovered over */
 a:hover {
     color: #61AFEF; /* Set your desired hover color */
-}
-
-main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
-    text-align: center;
-    background: #262626;
-    padding: 4rem;
-    gap: 1.5rem;
 }
 
 article {
@@ -198,3 +209,10 @@ img.card-thumbnail {
     color: black;
 }
 
+footer {
+    display: flex;
+    justify-content: center;
+    color: #ABB2BF;
+    background: #1E2227;
+    padding-bottom: 2rem;
+}
