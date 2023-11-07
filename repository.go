@@ -104,6 +104,52 @@ func (s *Repository) FindArticles(pk string) ([]*Article, error) {
 	return articles, nil
 }
 
+func (s *Repository) CategorizedPeople() ([]*nostr.Event, error) {
+
+	f := nostr.Filter{
+		Kinds:   []uint32{3000},
+		Limit:   10,
+	}
+
+	events := []*nostr.Event{}
+
+	// Subscribe the PubKey to every open connection to a relay.
+	for _, ws := range s.ws {
+
+		sub, err := ws.Subscribe(nostr.Filters{f})
+		if err != nil {
+			log.Fatalf("\nunable to subscribe: %#v", err)
+		}
+
+		orDone := func(done <-chan struct{}, stream <-chan *nostr.Event) <-chan *nostr.Event {
+			valStream := make(chan *nostr.Event)
+			go func() {
+				defer close(valStream)
+				for {
+					select {
+					case <-done:
+						return
+					case v, ok := <-stream:
+						if ok == false {
+							return
+						}
+						valStream <- v
+					}
+				}
+			}()
+			return valStream
+		}
+
+		for e := range orDone(sub.Done, sub.EventStream) {
+			events = append(events, e)
+		}
+
+		//cc.Close()
+	}
+
+	return events, nil
+}
+
 // Create and store article in local cache.
 func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 
