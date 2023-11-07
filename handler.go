@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/ffiat/nostr"
@@ -59,7 +60,7 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
-	pk := r.URL.Query().Get("pubkey")
+	pk := r.URL.Query().Get("search")
 	if pk != "" {
 		_, err := nostr.DecodeBech32(pk)
 		if err != nil {
@@ -72,25 +73,59 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 
 func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("Listing events")
-
-	npub := r.URL.Query().Get("pubkey")
-	if npub == "" {
+	search := r.URL.Query().Get("search")
+	if search == "" {
 		log.Fatalln("no npub provided")
 	}
 
-	pk, err := nostr.DecodeBech32(npub)
-	if err != nil {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("invalid npub"))
-		return
-	}
+    articles := []*Article{}
 
-	articles, err := s.repository.FindArticles(pk.(string))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+    if strings.HasPrefix(search, nostr.UriEvent) {
+
+        id := strings.TrimPrefix(search, nostr.UriEvent)
+
+        // Pull the NIP-51 list event using event ID.
+        event, err := s.repository.CategorizedPeople(id)
+        if err != nil {
+            panic(err)
+        }
+
+        // Loop all authors (pubkeys) in NIP-51 event tags (list).
+        for _, value := range event.Tags {
+
+            t, v := value[0], value[1]
+
+            if t == "p" {
+                notes, err := s.repository.FindArticles(v)
+                if err != nil {
+                    http.Error(w, err.Error(), http.StatusInternalServerError)
+                    return
+                }
+                for _, n := range notes {
+                    articles = append(articles, n)
+                }
+            }
+        }
+    } else if strings.HasPrefix(search, nostr.UriPub) {
+
+        log.Println("pull profile NIP-01")
+
+        npub := strings.TrimPrefix(search, nostr.Prefix)
+
+        pk, err := nostr.DecodeBech32(npub)
+        if err != nil {
+            w.WriteHeader(http.StatusOK)
+            w.Write([]byte("invalid npub"))
+            return
+        }
+
+        articles, err = s.repository.FindArticles(pk.(string))
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+    }
 
 	tmpl, err := template.ParseFiles("static/card.html")
 	if err != nil {

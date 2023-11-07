@@ -104,9 +104,10 @@ func (s *Repository) FindArticles(pk string) ([]*Article, error) {
 	return articles, nil
 }
 
-func (s *Repository) CategorizedPeople() ([]*nostr.Event, error) {
+func (s *Repository) CategorizedPeople(id string) (*nostr.Event, error) {
 
 	f := nostr.Filter{
+        Ids: []string{id},
 		Kinds:   []uint32{3000},
 		Limit:   10,
 	}
@@ -147,7 +148,13 @@ func (s *Repository) CategorizedPeople() ([]*nostr.Event, error) {
 		//cc.Close()
 	}
 
-	return events, nil
+    // Make sure the event is a NIP-51 list
+    e := events[0]
+    if e.Kind != 3000 {
+        log.Fatalln("not a NIP-51 categorized people list")
+    }
+
+	return e, nil
 }
 
 // Create and store article in local cache.
