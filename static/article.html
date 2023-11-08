@@ -1,8 +1,12 @@
 {{ block "article" . }}
 
-<article>
+<article class="article">
 
-    {{ .Content }}
+    <img src="{{ .Image }}" />
+
+    <section id="#content" class="content">
+        {{ .Content }}
+    </section>
 
 </article>
 

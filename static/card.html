@@ -1,25 +1,27 @@
 {{ block "events" . }}
 
+{{ if . }}
 {{ range . }}
 
     <article class="article-card"
         hx-get="article/{{ .Id }}"
         hx-push-url="true"
-        hx-target="body">
+        hx-target="body"
+        hx-swap="outerHTML">
 
-        <img class="article-thumbnail" width="300" height="200" src="{{ .Image }}" />
+        <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
 
-        <div class="article-body">
-            <header class="article-header">
+        <div class="card-body">
+            <header>
                 {{ .Title }}
             </header>
-            <div class="article-tags">
+            <div class="card-tags">
                 {{ range .Tags }}
                     <b>{{ . }}</b>
                 {{ end }}
             </div>
-            <section class="article-author">
-                <img class="profile" src="{{ .Profile.Picture }}" />
+            <section class="profile">
+                <img src="{{ .Profile.Picture }}" />
                 <div>
                     <b class="author-name">{{ .Profile.Name }}</b>
                     <time datetime> {{ .CreatedAt }} </time>
@@ -27,6 +29,7 @@
             </section>
         </div>
     </article>
+{{ end }}
 {{ end }}
 
 {{ end }}

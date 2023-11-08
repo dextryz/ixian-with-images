@@ -21,22 +21,119 @@ p, h1, h2, h3, h4, h5, h6 {
 
 /* ---------------------------------------------------- */
 
+:root {
+    --clr-black: #1E2227;
+    --clr-green: #98C379;
+    --clr-red: #E06C75;
+    --clr-yellow: #E5C07B;
+    --clr-blue: #61AFEF;
+    --clr-pink: #C678DD;
+    --clr-cyan: #56B6C2;
+}
+
 body {
-    display: flex;
-    flex-flow: column;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 16px;
-    text-align: center;
-    background: #262626;
+    background: var(--clr-black);
     line-height: 1.5;
-    padding: 4rem;
-    gap: 4rem;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    background: var(--clr-black);
+    padding: 2rem 2rem 0rem 2rem;
+}
+
+input[type=search] {
+    width: 100%;
+    padding: 8px 20px 8px 20px;
+    border: 0;
+    border-radius: 10px;
+    font-size: 16px;
+    background: snow;
+}
+
+input[type=search]:focus {
+    background: snow;
+    border: 0;
 }
 
 main {
+    display: block;
+    padding: 3rem;
+    background: var(--clr-black);
+}
+
+.cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
+    background: var(--clr-black);
+}
+
+.article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: var(--clr-black);
+    padding-bottom: 5rem;
+}
+
+.article img {
+    width: 100%;
+    height: 50vh;
+    padding-bottom: 2rem;
+    object-fit: cover;
+    mask-image: linear-gradient(black, transparent);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    color: #ABB2BF;
+    text-align: left;
+    max-width: 50rem;
+    gap: 2rem;
+    margin-inline: auto;
+    width: min(90%, 1000px);
+}
+
+.content h2 {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.inline {
+    color: var(--clr-red);
+    text-decoration: none; /* Removes the underline */
+}
+
+/* Changing the color when the link is visited */
+.inline:visited {
+    color: #C678DD; /* Set your desired color for visited links */
+}
+
+/* Changing the color when the link is hovered over */
+.inline:hover {
+    color: #61AFEF; /* Set your desired hover color */
+}
+
+a {
+    color: var(--clr-blue);
+    text-decoration: none; /* Removes the underline */
+}
+
+/* Changing the color when the link is visited */
+a:visited {
+    color: #C678DD; /* Set your desired color for visited links */
+}
+
+/* Changing the color when the link is hovered over */
+a:hover {
+    color: #61AFEF; /* Set your desired hover color */
 }
 
 article {
@@ -47,8 +144,7 @@ article {
     display: flex;
     flex-flow: column;
     color: #93a1a1;
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
+    border-radius: 1rem;
     background: white;
     border-width: 0px;
     border-style: solid;
@@ -63,7 +159,7 @@ article {
     transition: 250ms;
 }
 
-.article-body {
+.card-body {
     display: flex;
     flex-flow: column;
     flex: 1;
@@ -72,16 +168,16 @@ article {
     padding: 1.5rem;
 }
 
-img.article-thumbnail {
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
+img.card-thumbnail {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
     border-width: 0px;
     height: 250px;
     object-fit: cover;
     width: 100%;
 }
 
-.article-header {
+.card-body header {
     color: black;
     font-size: x-large;
     font-weight: bold;
@@ -89,7 +185,7 @@ img.article-thumbnail {
     cursor: pointer;
 }
 
-.article-header:hover {
+.card-body header:hover {
     background: linear-gradient(90deg,#ff8a00,#e52e71);
     text-shadow: none;
     -webkit-text-fill-color: transparent;
@@ -101,7 +197,7 @@ img.article-thumbnail {
     text-align: center;
 }
 
-.article-author {
+.profile {
     -webkit-margin-before: auto;
     margin-block-start: auto;
     display: grid;
@@ -110,7 +206,7 @@ img.article-thumbnail {
     align-items: center;
 }
 
-.profile {
+.profile img {
     width: 60px;
     height: 60px;
     border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
@@ -121,7 +217,7 @@ img.article-thumbnail {
     /*filter: grayscale(100%);*/
 }
 
-.profile:hover {
+.profile img:hover {
     border-radius: 50%;
 }
 
@@ -129,26 +225,14 @@ img.article-thumbnail {
     color: black;
 }
 
-.search-bar {
+footer {
     display: flex;
     justify-content: center;
+    color: #ABB2BF;
+    background: var(--clr-black);
+    padding-bottom: 2rem;
 }
 
-input[type=search] {
-    width: 500px;
-    padding: 8px 15px 8px 15px;
-    border: 0;
-    font-size: 16px;
-    border-radius: 20px;
-    background: snow;
-    background-position: 2% 50%;
-    background-repeat: no-repeat;
-    background-size: 30px;
-    transition: 0.5s all ease-in-out;
-}
-
-input[type=search]:focus {
-    width: 1000px;
-    background: snow;
-    border: 0;
+footer i {
+    color: var(--clr-red);
 }

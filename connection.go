@@ -75,7 +75,7 @@ func (s *Connection) Listen() error {
 
 			case req := <-s.reqStream:
 
-				log.Println("REQ sent to relays")
+                log.Printf("REQ sent to relays: %#v", req)
 
 				// Marshal to a slice of bytes ready for transmission.
 				bytes, err := json.Marshal(req)
