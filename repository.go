@@ -92,21 +92,18 @@ func (s *Repository) Article(id string) (*Article, error) {
         // TODO: this is DRY With FindARticles
         event, err := s.pullArticle(id)
         if err != nil {
-            log.Println("A")
             return nil, err
         }
 
         // Retrieve user profile from nostr relays
         eventsMetadata, err := s.pull(event.PubKey, nostr.KindSetMetadata)
         if err != nil {
-            log.Println("B")
             return nil, err
         }
 
         profile := eventsMetadata[0]
         p, err := nostr.ParseMetadata(*profile)
         if err != nil {
-            log.Println("C")
             return nil, err
         }
 

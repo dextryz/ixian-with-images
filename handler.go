@@ -22,10 +22,6 @@ type Handler struct {
 	repository Repository
 }
 
-func (s *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/home", http.StatusMovedPermanently)
-}
-
 func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
