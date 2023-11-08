@@ -59,6 +59,7 @@ func main() {
 	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
 	r.HandleFunc("/article/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
+	r.HandleFunc("/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 
 	server := &http.Server{
 		Addr:    ":8081",

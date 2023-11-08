@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
+	"regexp"
 	"time"
 
 	"github.com/gomarkdown/markdown"
-	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 
 	"github.com/ffiat/nostr"
 )
 
+const limit = 100
+
 type Article struct {
+    // NIP-19 note id (note1fntxtkcy9pjwucqwa9mddn7v03wwwsu9j330jj350nvhpky2tuaspk6nqc)
 	Id        string
 	Image     string
 	Title     string
@@ -29,19 +30,17 @@ type Repository struct {
 	ws []*Connection
 }
 
-var printAst = false
-
 func markdownToHtml(md []byte) string {
+
+    text, err := swapLinks(string(md))
+    if err != nil {
+        log.Fatalln(err)
+    }
+
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions
 	p := parser.NewWithExtensions(extensions)
-	doc := p.Parse(md)
-
-	if printAst {
-		fmt.Print("--- AST tree:\n")
-		ast.Print(os.Stdout, doc)
-		fmt.Print("\n")
-	}
+	doc := p.Parse([]byte(text))
 
 	// create HTML renderer with extensions
 	htmlFlags := html.CommonFlags | html.HrefTargetBlank
@@ -51,6 +50,26 @@ func markdownToHtml(md []byte) string {
 	c := markdown.Render(doc, renderer)
 
 	return string(c)
+}
+
+//text := "Click [me](nostr:nevent17915d512457e4bc461b54ba95351719c150946ed4aa00b1d83a263deca69dae) to"
+//replacement := `<a href="#" hx-get="article/$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
+func swapLinks(text string) (string, error) {
+
+	// Define the regular expression pattern to match the markdown-like link
+	//pattern := `\[(.*?)\]\((.*?)\)`
+	pattern := `\[(.*?)\]\(nostr:(.*?)\)`
+
+	// Compile the regular expression
+	re := regexp.MustCompile(pattern)
+
+	// Define the replacement pattern
+    replacement := `<a href="#" class="inline" hx-get="$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
+
+	// Replace the matched patterns with the HTML tag
+	result := re.ReplaceAllString(text, replacement)
+
+    return result, nil
 }
 
 func (s *Repository) Close() error {
@@ -64,10 +83,42 @@ func (s *Repository) Close() error {
 
 // Retrieve article from local cache.
 func (s *Repository) Article(id string) (*Article, error) {
+
 	a, ok := s.db[id]
+
+    // If not cached, try and pull and cache indivdual aricle
 	if !ok {
-		return nil, fmt.Errorf("article not found (id: %s)", id)
+
+        // TODO: this is DRY With FindARticles
+        event, err := s.pullArticle(id)
+        if err != nil {
+            log.Println("A")
+            return nil, err
+        }
+
+        // Retrieve user profile from nostr relays
+        eventsMetadata, err := s.pull(event.PubKey, nostr.KindSetMetadata)
+        if err != nil {
+            log.Println("B")
+            return nil, err
+        }
+
+        profile := eventsMetadata[0]
+        p, err := nostr.ParseMetadata(*profile)
+        if err != nil {
+            log.Println("C")
+            return nil, err
+        }
+
+        // Create article from event and profile, cache and return to handler.
+        articleCached, err := s.cache(p, event)
+        if err != nil {
+            return nil, err
+        }
+
+        return articleCached, nil
 	}
+
 	return a, nil
 }
 
@@ -109,7 +160,7 @@ func (s *Repository) CategorizedPeople(id string) (*nostr.Event, error) {
 	f := nostr.Filter{
         Ids: []string{id},
 		Kinds:   []uint32{3000},
-		Limit:   10,
+		Limit:   limit,
 	}
 
 	events := []*nostr.Event{}
@@ -169,9 +220,15 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 	// Format time.Time to "yyyy-mm-dd"
 	createdAt := t.Format("2006-01-02")
 
+    // Encode NIP-01 event id to NIP-19 note id
+    id, err := nostr.EncodeNote(e.Id)
+    if err != nil {
+        return nil, err
+    }
+
 	// Create article with Markdown content converted to HTML.
 	a := &Article{
-		Id:        e.Id,
+		Id:        id,
 		Content:   markdownToHtml([]byte(e.Content)),
 		CreatedAt: createdAt,
 		Profile:   p,
@@ -195,12 +252,60 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 }
 
 // Pull events from nostr relays.
+func (s *Repository) pullArticle(id string) (*nostr.Event, error) {
+
+	f := nostr.Filter{
+        Ids: []string{id},
+		Kinds:   []uint32{30026},
+		Limit:   1,
+	}
+
+	events := []*nostr.Event{}
+
+	// Subscribe the PubKey to every open connection to a relay.
+	for _, ws := range s.ws {
+
+		sub, err := ws.Subscribe(nostr.Filters{f})
+		if err != nil {
+			log.Fatalf("\nunable to subscribe: %#v", err)
+		}
+
+		orDone := func(done <-chan struct{}, stream <-chan *nostr.Event) <-chan *nostr.Event {
+			valStream := make(chan *nostr.Event)
+			go func() {
+				defer close(valStream)
+				for {
+					select {
+					case <-done:
+						return
+					case v, ok := <-stream:
+						if ok == false {
+							return
+						}
+						valStream <- v
+					}
+				}
+			}()
+			return valStream
+		}
+
+		for e := range orDone(sub.Done, sub.EventStream) {
+			events = append(events, e)
+		}
+
+		//cc.Close()
+	}
+
+	return events[0], nil
+}
+
+// Pull events from nostr relays.
 func (s *Repository) pull(pk string, kind uint32) ([]*nostr.Event, error) {
 
 	f := nostr.Filter{
 		Authors: []string{pk},
 		Kinds:   []uint32{kind},
-		Limit:   10,
+		Limit:   limit,
 	}
 
 	events := []*nostr.Event{}

@@ -46,15 +46,15 @@ body {
 }
 
 input[type=search] {
-    width: 500px;
+    width: 750px;
     padding: 8px 15px 8px 15px;
     border: 0;
+    border-radius: 10px;
     font-size: 16px;
     background: snow;
 }
 
 input[type=search]:focus {
-    width: 1000px;
     background: snow;
     border: 0;
 }
@@ -105,6 +105,21 @@ main {
     font-weight: bold;
 }
 
+.inline {
+    color: var(--clr-red);
+    text-decoration: none; /* Removes the underline */
+}
+
+/* Changing the color when the link is visited */
+.inline:visited {
+    color: #C678DD; /* Set your desired color for visited links */
+}
+
+/* Changing the color when the link is hovered over */
+.inline:hover {
+    color: #61AFEF; /* Set your desired hover color */
+}
+
 a {
     color: var(--clr-blue);
     text-decoration: none; /* Removes the underline */
@@ -128,7 +143,7 @@ article {
     display: flex;
     flex-flow: column;
     color: #93a1a1;
-    border-radius: 2rem;
+    border-radius: 1rem;
     background: white;
     border-width: 0px;
     border-style: solid;
@@ -153,8 +168,8 @@ article {
 }
 
 img.card-thumbnail {
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
     border-width: 0px;
     height: 250px;
     object-fit: cover;
@@ -215,4 +230,8 @@ footer {
     color: #ABB2BF;
     background: var(--clr-black);
     padding-bottom: 2rem;
+}
+
+footer i {
+    color: var(--clr-red);
 }

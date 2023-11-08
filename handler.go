@@ -29,8 +29,17 @@ func (s *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	a, err := s.repository.Article(vars["id"])
+
+    // TODO: For now prefix should only be 'note'
+    _, event, err := nostr.DecodeBech32(vars["id"])
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	a, err := s.repository.Article(event)
+	if err != nil {
+        log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -62,7 +71,7 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 	pk := r.URL.Query().Get("search")
 	if pk != "" {
-		_, err := nostr.DecodeBech32(pk)
+		_, _, err := nostr.DecodeBech32(pk)
 		if err != nil {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("invalid npub"))
@@ -112,14 +121,14 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
         npub := strings.TrimPrefix(search, nostr.Prefix)
 
-        pk, err := nostr.DecodeBech32(npub)
+        _, pk, err := nostr.DecodeBech32(npub)
         if err != nil {
             w.WriteHeader(http.StatusOK)
             w.Write([]byte("invalid npub"))
             return
         }
 
-        articles, err = s.repository.FindArticles(pk.(string))
+        articles, err = s.repository.FindArticles(pk)
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
