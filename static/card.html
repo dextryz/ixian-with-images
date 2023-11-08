@@ -1,0 +1,35 @@
+{{ block "events" . }}
+
+{{ if . }}
+{{ range . }}
+
+    <article class="article-card"
+        hx-get="article/{{ .Id }}"
+        hx-push-url="true"
+        hx-target="body"
+        hx-swap="outerHTML">
+
+        <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
+
+        <div class="card-body">
+            <header>
+                {{ .Title }}
+            </header>
+            <div class="card-tags">
+                {{ range .Tags }}
+                    <b>{{ . }}</b>
+                {{ end }}
+            </div>
+            <section class="profile">
+                <img src="{{ .Profile.Picture }}" />
+                <div>
+                    <b class="author-name">{{ .Profile.Name }}</b>
+                    <time datetime> {{ .CreatedAt }} </time>
+                </div>
+            </section>
+        </div>
+    </article>
+{{ end }}
+{{ end }}
+
+{{ end }}

@@ -9,6 +9,8 @@ View your [nostr](https://nostr.com/) events without the noise.
 
 ## TODO
 
+- [ ] Search NIP-05 profiles using HTMX active search
+- [ ] Manage hyper links in event content
 - [ ] Public key verification
 - [ ] Add event ID in smaller and greyed out text
 - [X] Add list of relays to local config
@@ -42,3 +44,8 @@ make run
 ```
 
 5. Navigate to [http://localhost:8081/events](http://localhost:8081/events)
+
+## Client
+
+nostr:npub14ge829c4pvgx24c35qts3sv82wc2xwcmgng93tzp6d52k9de2xgqq0y4jk
+nostr:nevent17915d512457e4bc461b54ba95351719c150946ed4aa00b1d83a263deca69dae

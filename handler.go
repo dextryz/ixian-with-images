@@ -1,63 +1,142 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
-	"regexp"
-	"sort"
+	"strings"
 	"text/template"
 
 	"github.com/ffiat/nostr"
+	"github.com/gorilla/mux"
 )
 
 type Data struct {
 	Events      []*nostr.Event
 	SearchQuery string
+	Error       string
+	Invalid     bool
 }
 
 type Handler struct {
 	repository Repository
 }
 
-func (s *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/events", http.StatusMovedPermanently)
-}
+func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
-func BoldHashtags(content string) string {
-	re := regexp.MustCompile(`#(\w+)`)
-	return re.ReplaceAllString(content, "<b>#$1</b>")
-}
+	vars := mux.Vars(r)
 
-func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
-
-	search := r.URL.Query().Get("pubkey")
-
-	data := Data{
-		SearchQuery: search,
-	}
-
-	// TODO: Validate PubKey similar to email validation.
-
-	if search != "" {
-		data.Events = s.repository.FindByPubKey(search)
-	} else {
-		data.Events = s.repository.All()
-	}
-
-    // Apply CSS styling to event content.
-    for _, e := range data.Events {
-        e.Content = BoldHashtags(e.Content)
-    }
-
-    // Newest to latest
-    sort.Slice(data.Events, func(i, j int) bool {
-		return data.Events[i].CreatedAt > data.Events[j].CreatedAt
-	})
-
-	tmpl, err := template.ParseFiles("template/home.html", "template/index.html")
+    // TODO: For now prefix should only be 'note'
+    _, event, err := nostr.DecodeBech32(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "home.html", data)
+	a, err := s.repository.Article(event)
+	if err != nil {
+        log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("static/article.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, a)
+}
+
+func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
+
+	tmpl, err := template.ParseFiles("static/home.html", "static/card.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+    articles := []*Article{}
+	err = tmpl.ExecuteTemplate(w, "home.html", articles)
+	if err != nil {
+		fmt.Println("Error executing template:", err)
+	}
+}
+
+func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
+	pk := r.URL.Query().Get("search")
+	if pk != "" {
+		_, _, err := nostr.DecodeBech32(pk)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("invalid npub"))
+			return
+		}
+	}
+}
+
+func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
+
+	search := r.URL.Query().Get("search")
+	if search == "" {
+		log.Fatalln("no npub provided")
+	}
+
+    articles := []*Article{}
+
+    if strings.HasPrefix(search, nostr.UriEvent) {
+
+        id := strings.TrimPrefix(search, nostr.UriEvent)
+
+        // Pull the NIP-51 list event using event ID.
+        event, err := s.repository.CategorizedPeople(id)
+        if err != nil {
+            panic(err)
+        }
+
+        // Loop all authors (pubkeys) in NIP-51 event tags (list).
+        for _, value := range event.Tags {
+
+            t, v := value[0], value[1]
+
+            if t == "p" {
+                notes, err := s.repository.FindArticles(v)
+                if err != nil {
+                    http.Error(w, err.Error(), http.StatusInternalServerError)
+                    return
+                }
+                for _, n := range notes {
+                    articles = append(articles, n)
+                }
+            }
+        }
+    } else if strings.HasPrefix(search, nostr.UriPub) {
+
+        log.Println("pull profile NIP-01")
+
+        npub := strings.TrimPrefix(search, nostr.Prefix)
+
+        _, pk, err := nostr.DecodeBech32(npub)
+        if err != nil {
+            w.WriteHeader(http.StatusOK)
+            w.Write([]byte("invalid npub"))
+            return
+        }
+
+        articles, err = s.repository.FindArticles(pk)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+    }
+
+	tmpl, err := template.ParseFiles("static/card.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, articles)
 }

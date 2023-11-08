@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ffiat/nostr"
 	"github.com/gorilla/mux"
 )
 
@@ -43,7 +42,7 @@ func main() {
 	}
 
 	repository := Repository{
-		db: make(map[string]*nostr.Event),
+		db: make(map[string]*Article),
 		ws: websockets,
 	}
 
@@ -52,8 +51,14 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", handler.IndexHandler)
+
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	r.HandleFunc("/ixian", handler.Home).Methods("GET")
+	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
+	r.HandleFunc("/article/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
+	r.HandleFunc("/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 
 	server := &http.Server{
 		Addr:    ":8081",
