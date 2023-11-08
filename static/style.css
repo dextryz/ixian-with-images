@@ -46,7 +46,7 @@ body {
 }
 
 input[type=search] {
-    width: 100%;
+    width: 750px;
     padding: 8px 20px 8px 20px;
     border: 0;
     border-radius: 10px;
