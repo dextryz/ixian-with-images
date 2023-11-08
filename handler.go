@@ -22,12 +22,12 @@ type Handler struct {
 	repository Repository
 }
 
-func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-    // TODO: For now prefix should only be 'note'
-    _, event, err := nostr.DecodeBech32(vars["id"])
+	// TODO: For now prefix should only be 'note'
+	_, event, err := nostr.DecodeBech32(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -35,7 +35,40 @@ func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 	a, err := s.repository.Article(event)
 	if err != nil {
-        log.Println(err)
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 1. Pull lists
+	// 1. Pull bookmarks
+	// 1. Pull hightlight
+	// 1. Pull graphs
+	// 1. Pull orphans
+
+	tmpl, err := template.ParseFiles("static/profile.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, a.Profile)
+}
+
+func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	// TODO: For now prefix should only be 'note'
+	_, event, err := nostr.DecodeBech32(vars["id"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	a, err := s.repository.Article(event)
+	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -57,7 +90,7 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    articles := []*Article{}
+	articles := []*Article{}
 	err = tmpl.ExecuteTemplate(w, "home.html", articles)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
@@ -83,54 +116,54 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("no npub provided")
 	}
 
-    articles := []*Article{}
+	articles := []*Article{}
 
-    if strings.HasPrefix(search, nostr.UriEvent) {
+	if strings.HasPrefix(search, nostr.UriEvent) {
 
-        id := strings.TrimPrefix(search, nostr.UriEvent)
+		id := strings.TrimPrefix(search, nostr.UriEvent)
 
-        // Pull the NIP-51 list event using event ID.
-        event, err := s.repository.CategorizedPeople(id)
-        if err != nil {
-            panic(err)
-        }
+		// Pull the NIP-51 list event using event ID.
+		event, err := s.repository.CategorizedPeople(id)
+		if err != nil {
+			panic(err)
+		}
 
-        // Loop all authors (pubkeys) in NIP-51 event tags (list).
-        for _, value := range event.Tags {
+		// Loop all authors (pubkeys) in NIP-51 event tags (list).
+		for _, value := range event.Tags {
 
-            t, v := value[0], value[1]
+			t, v := value[0], value[1]
 
-            if t == "p" {
-                notes, err := s.repository.FindArticles(v)
-                if err != nil {
-                    http.Error(w, err.Error(), http.StatusInternalServerError)
-                    return
-                }
-                for _, n := range notes {
-                    articles = append(articles, n)
-                }
-            }
-        }
-    } else if strings.HasPrefix(search, nostr.UriPub) {
+			if t == "p" {
+				notes, err := s.repository.FindArticles(v)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				for _, n := range notes {
+					articles = append(articles, n)
+				}
+			}
+		}
+	} else if strings.HasPrefix(search, nostr.UriPub) {
 
-        log.Println("pull profile NIP-01")
+		log.Println("pull profile NIP-01")
 
-        npub := strings.TrimPrefix(search, nostr.Prefix)
+		npub := strings.TrimPrefix(search, nostr.Prefix)
 
-        _, pk, err := nostr.DecodeBech32(npub)
-        if err != nil {
-            w.WriteHeader(http.StatusOK)
-            w.Write([]byte("invalid npub"))
-            return
-        }
+		_, pk, err := nostr.DecodeBech32(npub)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("invalid npub"))
+			return
+		}
 
-        articles, err = s.repository.FindArticles(pk)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
+		articles, err = s.repository.FindArticles(pk)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-    }
+	}
 
 	tmpl, err := template.ParseFiles("static/card.html")
 	if err != nil {

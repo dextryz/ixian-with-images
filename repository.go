@@ -14,15 +14,33 @@ import (
 
 const limit = 100
 
+type Profile struct {
+	Name       string
+	About      string
+	Website      string
+	Banner     string
+	Picture    string
+	Identifier string
+	Articles   int
+	Notes      int
+	Lists      int
+	Bookmarks  int
+	Highlights int
+	Graphs     int
+	Orphans    int
+}
+
 type Article struct {
-    // NIP-19 note id (note1fntxtkcy9pjwucqwa9mddn7v03wwwsu9j330jj350nvhpky2tuaspk6nqc)
+	// NIP-19 note id (note1fntxtkcy9pjwucqwa9mddn7v03wwwsu9j330jj350nvhpky2tuaspk6nqc)
 	Id        string
 	Image     string
 	Title     string
 	Tags      []string
 	Content   string
 	CreatedAt string
-	Profile   *nostr.Profile
+	// TODO
+	//Profile   *nostr.Profile
+	Profile *Profile
 }
 
 type Repository struct {
@@ -32,10 +50,10 @@ type Repository struct {
 
 func markdownToHtml(md []byte) string {
 
-    text, err := swapLinks(string(md))
-    if err != nil {
-        log.Fatalln(err)
-    }
+	text, err := swapLinks(string(md))
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions
@@ -52,8 +70,8 @@ func markdownToHtml(md []byte) string {
 	return string(c)
 }
 
-//text := "Click [me](nostr:nevent17915d512457e4bc461b54ba95351719c150946ed4aa00b1d83a263deca69dae) to"
-//replacement := `<a href="#" hx-get="article/$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
+// text := "Click [me](nostr:nevent17915d512457e4bc461b54ba95351719c150946ed4aa00b1d83a263deca69dae) to"
+// replacement := `<a href="#" hx-get="article/$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
 func swapLinks(text string) (string, error) {
 
 	// Define the regular expression pattern to match the markdown-like link
@@ -64,12 +82,12 @@ func swapLinks(text string) (string, error) {
 	re := regexp.MustCompile(pattern)
 
 	// Define the replacement pattern
-    replacement := `<a href="#" class="inline" hx-get="$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
+	replacement := `<a href="#" class="inline" hx-get="$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
 
 	// Replace the matched patterns with the HTML tag
 	result := re.ReplaceAllString(text, replacement)
 
-    return result, nil
+	return result, nil
 }
 
 func (s *Repository) Close() error {
@@ -86,34 +104,34 @@ func (s *Repository) Article(id string) (*Article, error) {
 
 	a, ok := s.db[id]
 
-    // If not cached, try and pull and cache indivdual aricle
+	// If not cached, try and pull and cache indivdual aricle
 	if !ok {
 
-        // TODO: this is DRY With FindARticles
-        event, err := s.pullArticle(id)
-        if err != nil {
-            return nil, err
-        }
+		// TODO: this is DRY With FindARticles
+		event, err := s.pullArticle(id)
+		if err != nil {
+			return nil, err
+		}
 
-        // Retrieve user profile from nostr relays
-        eventsMetadata, err := s.pull(event.PubKey, nostr.KindSetMetadata)
-        if err != nil {
-            return nil, err
-        }
+		// Retrieve user profile from nostr relays
+		eventsMetadata, err := s.pull(event.PubKey, nostr.KindSetMetadata)
+		if err != nil {
+			return nil, err
+		}
 
-        profile := eventsMetadata[0]
-        p, err := nostr.ParseMetadata(*profile)
-        if err != nil {
-            return nil, err
-        }
+		profile := eventsMetadata[0]
+		p, err := nostr.ParseMetadata(*profile)
+		if err != nil {
+			return nil, err
+		}
 
-        // Create article from event and profile, cache and return to handler.
-        articleCached, err := s.cache(p, event)
-        if err != nil {
-            return nil, err
-        }
+		// Create article from event and profile, cache and return to handler.
+		articleCached, err := s.cache(p, event)
+		if err != nil {
+			return nil, err
+		}
 
-        return articleCached, nil
+		return articleCached, nil
 	}
 
 	return a, nil
@@ -155,9 +173,9 @@ func (s *Repository) FindArticles(pk string) ([]*Article, error) {
 func (s *Repository) CategorizedPeople(id string) (*nostr.Event, error) {
 
 	f := nostr.Filter{
-        Ids: []string{id},
-		Kinds:   []uint32{3000},
-		Limit:   limit,
+		Ids:   []string{id},
+		Kinds: []uint32{3000},
+		Limit: limit,
 	}
 
 	events := []*nostr.Event{}
@@ -196,11 +214,11 @@ func (s *Repository) CategorizedPeople(id string) (*nostr.Event, error) {
 		//cc.Close()
 	}
 
-    // Make sure the event is a NIP-51 list
-    e := events[0]
-    if e.Kind != 3000 {
-        log.Fatalln("not a NIP-51 categorized people list")
-    }
+	// Make sure the event is a NIP-51 list
+	e := events[0]
+	if e.Kind != 3000 {
+		log.Fatalln("not a NIP-51 categorized people list")
+	}
 
 	return e, nil
 }
@@ -217,18 +235,34 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 	// Format time.Time to "yyyy-mm-dd"
 	createdAt := t.Format("2006-01-02")
 
-    // Encode NIP-01 event id to NIP-19 note id
-    id, err := nostr.EncodeNote(e.Id)
-    if err != nil {
-        return nil, err
-    }
+	// Encode NIP-01 event id to NIP-19 note id
+	id, err := nostr.EncodeNote(e.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	profile := &Profile{
+		Name:       p.Name,
+		About:      p.About,
+        Website: p.Website,
+		Banner:     p.Banner,
+		Picture:    p.Picture,
+		Identifier: p.Nip05,
+		Articles:   100,
+		Notes:      100,
+		Lists:      100,
+		Bookmarks:  100,
+		Highlights: 100,
+		Graphs:     100,
+		Orphans:    100,
+	}
 
 	// Create article with Markdown content converted to HTML.
 	a := &Article{
 		Id:        id,
 		Content:   markdownToHtml([]byte(e.Content)),
 		CreatedAt: createdAt,
-		Profile:   p,
+		Profile:   profile,
 	}
 
 	for _, t := range e.Tags {
@@ -252,9 +286,9 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 func (s *Repository) pullArticle(id string) (*nostr.Event, error) {
 
 	f := nostr.Filter{
-        Ids: []string{id},
-		Kinds:   []uint32{30026},
-		Limit:   1,
+		Ids:   []string{id},
+		Kinds: []uint32{30026},
+		Limit: 1,
 	}
 
 	events := []*nostr.Event{}

@@ -1,0 +1,52 @@
+<article class="profile">
+
+    <img src="{{ .Banner }}" />
+
+    <section class="about">
+        <img src="{{ .Picture }}" />
+        <h1>
+            {{ .Name }}
+        </h1>
+        <h2>
+            {{ .Identifier }}
+        </h2>
+        <a href="{{ .Website }}">
+            {{ .Website }}
+        </a>
+        <p>
+            {{ .About }}
+        </p>
+    </section>
+
+    <section class="data">
+        <div>
+            <p>{{ .Articles }}</p>
+            <p>articles</p>
+        </div>
+        <div>
+            <p>{{ .Notes }}</p>
+            <p>notes</p>
+        </div>
+        <div>
+            <p>{{ .Lists }}</p>
+            <p>lists</p>
+        </div>
+        <div>
+            <p>{{ .Bookmarks }}</p>
+            <p>bookmarks</p>
+        </div>
+        <div>
+            <p>{{ .Highlights }}</p>
+            <p>highlights</p>
+        </div>
+        <div>
+            <p>{{ .Graphs }}</p>
+            <p>graphs</p>
+        </div>
+        <div>
+            <p>{{ .Orphans }}</p>
+            <p>orphans</p>
+        </div>
+    </section>
+
+</article>

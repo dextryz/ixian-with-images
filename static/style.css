@@ -29,6 +29,8 @@ p, h1, h2, h3, h4, h5, h6 {
     --clr-blue: #61AFEF;
     --clr-pink: #C678DD;
     --clr-cyan: #56B6C2;
+    --clr-white: #F6F7F9;
+    --clr-text: #ABB2BF;
 }
 
 body {
@@ -51,12 +53,12 @@ input[type=search] {
     border: 0;
     border-radius: 10px;
     font-size: 16px;
-    background: snow;
+    background: var(--clr-white);
 }
 
 input[type=search]:focus {
-    background: snow;
-    border: 0;
+    background: var(--clr-white);
+    outline: 2px solid var(--clr-pink);
 }
 
 main {
@@ -136,10 +138,6 @@ a:hover {
     color: #61AFEF; /* Set your desired hover color */
 }
 
-article {
-    cursor: pointer;
-}
-
 .article-card {
     display: flex;
     flex-flow: column;
@@ -177,7 +175,7 @@ img.card-thumbnail {
     width: 100%;
 }
 
-.card-body header {
+.card-header {
     color: black;
     font-size: x-large;
     font-weight: bold;
@@ -185,7 +183,7 @@ img.card-thumbnail {
     cursor: pointer;
 }
 
-.card-body header:hover {
+.card-header:hover {
     background: linear-gradient(90deg,#ff8a00,#e52e71);
     text-shadow: none;
     -webkit-text-fill-color: transparent;
@@ -197,16 +195,17 @@ img.card-thumbnail {
     text-align: center;
 }
 
-.profile {
+.card-profile {
     -webkit-margin-before: auto;
     margin-block-start: auto;
     display: grid;
     grid-template-columns: 60px 1fr;
     gap: 1rem;
     align-items: center;
+    cursor: pointer;
 }
 
-.profile img {
+.card-profile img {
     width: 60px;
     height: 60px;
     border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
@@ -217,7 +216,7 @@ img.card-thumbnail {
     /*filter: grayscale(100%);*/
 }
 
-.profile img:hover {
+.card-profile img:hover {
     border-radius: 50%;
 }
 
@@ -235,4 +234,61 @@ footer {
 
 footer i {
     color: var(--clr-red);
+}
+
+.profile {
+    background: var(--clr-black);
+    color: var(--clr-text);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.profile img {
+    width: 100%;
+    height: 50vh;
+    border-radius: 40px;
+    object-fit: cover;
+}
+
+.about {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+}
+
+.about h1 {
+    font-weight: bold;
+    font-size: x-large;
+    max-width: 40rem;
+}
+
+.data {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4rem;
+    padding: 3rem 0rem 0rem 0rem;
+}
+
+.data > * {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about h2 {
+    font-size: small;
+    color: var(--clr-pink);
 }

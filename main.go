@@ -57,6 +57,7 @@ func main() {
 	r.HandleFunc("/ixian", handler.Home).Methods("GET")
 	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
+	r.HandleFunc("/profile/{id:[a-zA-Z0-9]+}", handler.Profile).Methods("GET")
 	r.HandleFunc("/article/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 	r.HandleFunc("/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 
