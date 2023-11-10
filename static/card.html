@@ -1,6 +1,5 @@
 {{ block "events" . }}
 
-{{ if . }}
 {{ range . }}
 
 <article class="article-card">
@@ -18,16 +17,18 @@
             {{ .Title }}
         </header>
 
-        {{ range .Tags }}
-            <h2 class="card-tag"
-                hx-get="tag/{{ . }}"
-                hx-push-url="true"
-                hx-target="body"
-                hx-swap="outerHTML">
+        <div class="card-tags">
+            {{ range .Tags }}
+                <h2 class="card-tag"
+                    hx-get="tag/{{ . }}"
+                    hx-push-url="true"
+                    hx-target="body"
+                    hx-swap="outerHTML">
 
-                {{ . }}
-            </h2>
-        {{ end }}
+                    {{ . }}
+                </h2>
+            {{ end }}
+        </div>
 
         <section class="card-profile"
             hx-get="profile/{{ .Id }}"
@@ -45,6 +46,5 @@
     </div>
 </article>
 
-{{ end }}
 {{ end }}
 {{ end }}

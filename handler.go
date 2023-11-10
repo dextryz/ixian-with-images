@@ -26,11 +26,8 @@ func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	log.Printf("TAG: %s", vars["tag"])
-
-	log.Printf("Len: %d", len(s.repository.hashtags[vars["tag"]]))
-
 	cards := []*Article{}
+
     // THis id is noteID from NIP-21
     for _, nid := range s.repository.hashtags[vars["tag"]] {
 
@@ -42,7 +39,7 @@ func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
         cards = append(cards, a)
     }
 
-	tmpl, err := template.ParseFiles("static/card.html")
+	tmpl, err := template.ParseFiles("static/taglist.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

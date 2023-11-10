@@ -311,12 +311,46 @@ footer i {
     font-size: large;
 }
 
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
 .card-tag {
     color: var(--clr-text);
     font-weight: bold;
-    font-size; small;
+    font-size: medium;
+    cursor: pointer
 }
 
 .card-tag:hover {
-    cursor: pointer
+    background: linear-gradient(90deg, var(--clr-blue), var(--clr-pink));
+    font-weight: bolder;
+    text-shadow: none;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.tag-card {
+    display: flex;
+    flex-flow: column;
+    color: #93a1a1;
+    border-radius: 1rem;
+    background: white;
+    border-width: 0px;
+    border-style: solid;
+    border-color: #586e75;
+    text-align: left;
+    transition: 0.2s;
+    transition: 1000ms;
+}
+
+.tags-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+    gap: 2rem;
+    background: var(--clr-black);
+    padding: 3rem;
 }
