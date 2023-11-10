@@ -48,22 +48,36 @@ body {
     padding: 2rem 2rem 0rem 2rem;
 }
 
+.search-bar section {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: left;
+    gap: 0.5rem;
+}
+
 input[type=search] {
+    outline: 0;
     width: 750px;
     border: 2px solid transparent; /* required to mock outline, so layout does not shift */
     padding: 8px 20px 8px 20px;
     border-radius: 8px;
-    font-size: 16px;
     background: var(--clr-dark);
+    font-size: 16px;
     color: var(--clr-text);
 }
 
 input[type=search]:focus {
-    /*outline: 1px solid var(--clr-pink);*/
-    outline: 0;
     background:
         linear-gradient(to top, var(--clr-dark), var(--clr-dark)) padding-box,
-        linear-gradient(to top, var(--clr-pink), var(--clr-red)) border-box;
+        linear-gradient(to top, var(--clr-cyan), var(--clr-blue)) border-box;
+}
+
+.message.error {
+    color: var(--clr-red);
+}
+
+.message.success {
+    color: var(--clr-green);
 }
 
 main {
@@ -353,4 +367,9 @@ footer i {
     gap: 2rem;
     background: var(--clr-black);
     padding: 3rem;
+}
+
+::placeholder {
+    font-size: 16px;
+    color: var(--clr-text);
 }

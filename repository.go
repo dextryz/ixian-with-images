@@ -88,7 +88,12 @@ func swapLinks(text string) (string, error) {
 	re := regexp.MustCompile(pattern)
 
 	// Define the replacement pattern
-	replacement := `<a href="#" class="inline" hx-get="$2" hx-push-url="true" hx-target="body" hx-swap="outerHTML">$1</a>`
+	replacement := `<a href="#" class="inline"
+        hx-get="$2"
+        hx-push-url="true"
+        hx-target="body"
+        hx-swap="outerHTML">$1
+    </a>`
 
 	// Replace the matched patterns with the HTML tag
 	result := re.ReplaceAllString(text, replacement)
@@ -286,7 +291,7 @@ func (s *Repository) createArticle(p *nostr.Profile, e *nostr.Event) (*Article, 
 		}
 	}
 
-    s.db[a.Id] = a
+	s.db[a.Id] = a
 
 	return a, nil
 }

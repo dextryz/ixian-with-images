@@ -28,16 +28,16 @@ func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
 
 	cards := []*Article{}
 
-    // THis id is noteID from NIP-21
-    for _, nid := range s.repository.hashtags[vars["tag"]] {
+	// THis id is noteID from NIP-21
+	for _, nid := range s.repository.hashtags[vars["tag"]] {
 
-        a, err := s.repository.Article(nid)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-        cards = append(cards, a)
-    }
+		a, err := s.repository.Article(nid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		cards = append(cards, a)
+	}
 
 	tmpl, err := template.ParseFiles("static/taglist.html")
 	if err != nil {
@@ -127,12 +127,16 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 	pk := r.URL.Query().Get("search")
 	if pk != "" {
 		_, _, err := nostr.DecodeBech32(pk)
+		log.Println(pk)
+		log.Println(err)
 		if err != nil {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("invalid npub"))
+			w.Write([]byte(`<span class="message error">Invalid entity</span>`))
 			return
 		}
 	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`<span class="message success">Valid entity</span>`))
 }
 
 func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
