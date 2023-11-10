@@ -310,3 +310,13 @@ footer i {
     font-weight: bold;
     font-size: large;
 }
+
+.card-tag {
+    color: var(--clr-text);
+    font-weight: bold;
+    font-size; small;
+}
+
+.card-tag:hover {
+    cursor: pointer
+}

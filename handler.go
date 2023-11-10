@@ -22,6 +22,35 @@ type Handler struct {
 	repository Repository
 }
 
+func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	log.Printf("TAG: %s", vars["tag"])
+
+	log.Printf("Len: %d", len(s.repository.hashtags[vars["tag"]]))
+
+	cards := []*Article{}
+    // THis id is noteID from NIP-21
+    for _, nid := range s.repository.hashtags[vars["tag"]] {
+
+        a, err := s.repository.Article(nid)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+        cards = append(cards, a)
+    }
+
+	tmpl, err := template.ParseFiles("static/card.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, cards)
+}
+
 func (s *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)

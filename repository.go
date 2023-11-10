@@ -17,7 +17,7 @@ const limit = 100
 type Profile struct {
 	Name       string
 	About      string
-	Website      string
+	Website    string
 	Banner     string
 	Picture    string
 	Identifier string
@@ -44,7 +44,13 @@ type Article struct {
 }
 
 type Repository struct {
+
+	// Basic ID index cache
 	db map[string]*Article
+
+	// Cache using a hashtag as the index key [tag: []article.ID] stores a list of article ids
+	hashtags map[string][]string
+
 	ws []*Connection
 }
 
@@ -126,7 +132,7 @@ func (s *Repository) Article(id string) (*Article, error) {
 		}
 
 		// Create article from event and profile, cache and return to handler.
-		articleCached, err := s.cache(p, event)
+		articleCached, err := s.createArticle(p, event)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +166,7 @@ func (s *Repository) FindArticles(pk string) ([]*Article, error) {
 	// Create article from event and profile, cache and return to handler.
 	articles := []*Article{}
 	for _, e := range eventsArticle {
-		a, err := s.cache(p, e)
+		a, err := s.createArticle(p, e)
 		if err != nil {
 			return nil, err
 		}
@@ -224,7 +230,7 @@ func (s *Repository) CategorizedPeople(id string) (*nostr.Event, error) {
 }
 
 // Create and store article in local cache.
-func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
+func (s *Repository) createArticle(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 
 	// Sample Unix timestamp: 1635619200 (represents 2021-10-30)
 	unixTimestamp := int64(e.CreatedAt)
@@ -244,7 +250,7 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 	profile := &Profile{
 		Name:       p.Name,
 		About:      p.About,
-        Website: p.Website,
+		Website:    p.Website,
 		Banner:     p.Banner,
 		Picture:    p.Picture,
 		Identifier: p.Nip05,
@@ -274,10 +280,13 @@ func (s *Repository) cache(p *nostr.Profile, e *nostr.Event) (*Article, error) {
 		}
 		if t.Key() == "t" {
 			a.Tags = append(a.Tags, t.Value())
+
+			// Add to hashtag index.
+			s.hashtags[t.Value()] = append(s.hashtags[t.Value()], a.Id)
 		}
 	}
 
-	s.db[e.Id] = a
+    s.db[a.Id] = a
 
 	return a, nil
 }

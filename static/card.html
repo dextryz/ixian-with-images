@@ -3,43 +3,48 @@
 {{ if . }}
 {{ range . }}
 
-    <article class="article-card">
+<article class="article-card">
 
-        <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
+    <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <header class="card-header"
-                hx-get="article/{{ .Id }}"
+        <header class="card-header"
+            hx-get="article/{{ .Id }}"
+            hx-push-url="true"
+            hx-target="body"
+            hx-swap="outerHTML">
+
+            {{ .Title }}
+        </header>
+
+        {{ range .Tags }}
+            <h2 class="card-tag"
+                hx-get="tag/{{ . }}"
                 hx-push-url="true"
                 hx-target="body"
                 hx-swap="outerHTML">
 
-                {{ .Title }}
-            </header>
+                {{ . }}
+            </h2>
+        {{ end }}
 
-            <div class="card-tags">
-                {{ range .Tags }}
-                    <b>{{ . }}</b>
-                {{ end }}
+        <section class="card-profile"
+            hx-get="profile/{{ .Id }}"
+            hx-push-url="true"
+            hx-target="body"
+            hx-swap="outerHTML">
+
+            <img src="{{ .Profile.Picture }}" />
+
+            <div>
+                <b class="author-name">{{ .Profile.Name }}</b>
+                <time datetime> {{ .CreatedAt }} </time>
             </div>
+        </section>
+    </div>
+</article>
 
-            <section class="card-profile"
-                hx-get="profile/{{ .Id }}"
-                hx-push-url="true"
-                hx-target="body"
-                hx-swap="outerHTML">
-
-                <img src="{{ .Profile.Picture }}" />
-
-                <div>
-                    <b class="author-name">{{ .Profile.Name }}</b>
-                    <time datetime> {{ .CreatedAt }} </time>
-                </div>
-            </section>
-        </div>
-    </article>
 {{ end }}
 {{ end }}
-
 {{ end }}
