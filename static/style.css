@@ -23,6 +23,7 @@ p, h1, h2, h3, h4, h5, h6 {
 
 :root {
     --clr-black: #1E2227;
+    --clr-dark: #323842;
     --clr-green: #98C379;
     --clr-red: #E06C75;
     --clr-yellow: #E5C07B;
@@ -53,12 +54,13 @@ input[type=search] {
     border: 0;
     border-radius: 10px;
     font-size: 16px;
-    background: var(--clr-white);
+    background: var(--clr-dark);
+    color: var(--clr-text);
 }
 
 input[type=search]:focus {
-    background: var(--clr-white);
-    outline: 2px solid var(--clr-pink);
+    background: var(--clr-dark);
+    outline: 1px solid var(--clr-pink);
 }
 
 main {
@@ -210,9 +212,7 @@ img.card-thumbnail {
     height: 60px;
     border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
     transition: border-radius 300ms ease-in-out;
-    border-width: 2px;
-    border-style: solid;
-    border-color: black;
+    border: 0px solid black;
     /*filter: grayscale(100%);*/
 }
 
@@ -240,38 +240,52 @@ footer i {
     background: var(--clr-black);
     color: var(--clr-text);
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-flow: column wrap;
+    justify-content: space-evenly;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
     padding: 2rem;
 }
 
-.profile img {
+.profile-banner {
+    display: block;
     width: 100%;
     height: 50vh;
     border-radius: 40px;
     object-fit: cover;
 }
 
-.about {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.about img {
+.profile-pic {
     border-radius: 50%;
     width: 150px;
     height: 150px;
+    margin-top: -75px;
+    box-shadow: 0 0 0 0px var(--clr-white);
+    transition: box-shadow 0.5s;
 }
 
-.about h1 {
+.profile-pic:hover {
+    box-shadow: 0 0 0 5px var(--clr-white);
+}
+
+.profile h1 {
     font-weight: bold;
     font-size: x-large;
     max-width: 40rem;
+}
+
+.profile h2 {
+    font-size: small;
+    color: var(--clr-text);
+}
+
+.profile a {
+    color: var(--clr-blue);
+    text-decoration: none; /* Removes the underline */
+}
+
+.profile a:hover {
+    color: var(--clr-cyan);
 }
 
 .data {
@@ -288,7 +302,8 @@ footer i {
     gap: 0.5rem;
 }
 
-.about h2 {
-    font-size: small;
-    color: var(--clr-pink);
+.data h2 {
+    color: var(--clr-text);
+    font-weight: bold;
+    font-size: large;
 }

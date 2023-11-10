@@ -1,50 +1,40 @@
 <article class="profile">
 
-    <img src="{{ .Banner }}" />
+    <img class="profile-banner" src="{{ .Banner }}" />
+    <img class="profile-pic" src="{{ .Picture }}" />
 
-    <section class="about">
-        <img src="{{ .Picture }}" />
-        <h1>
-            {{ .Name }}
-        </h1>
-        <h2>
-            {{ .Identifier }}
-        </h2>
-        <a href="{{ .Website }}">
-            {{ .Website }}
-        </a>
-        <p>
-            {{ .About }}
-        </p>
-    </section>
+    <h1>{{ .Name }}</h1>
+    <h2>{{ .Identifier }}</h2>
+    <a href="{{ .Website }}">{{ .Website }}</a>
+    <p>{{ .About }}</p>
 
     <section class="data">
         <div>
-            <p>{{ .Articles }}</p>
+            <h2>{{ .Articles }}</h2>
             <p>articles</p>
         </div>
         <div>
-            <p>{{ .Notes }}</p>
+            <h2>{{ .Notes }}</h2>
             <p>notes</p>
         </div>
         <div>
-            <p>{{ .Lists }}</p>
+            <h2>{{ .Lists }}</h2>
             <p>lists</p>
         </div>
         <div>
-            <p>{{ .Bookmarks }}</p>
+            <h2>{{ .Bookmarks }}</h2>
             <p>bookmarks</p>
         </div>
         <div>
-            <p>{{ .Highlights }}</p>
+            <h2>{{ .Highlights }}</h2>
             <p>highlights</p>
         </div>
         <div>
-            <p>{{ .Graphs }}</p>
+            <h2>{{ .Graphs }}</h2>
             <p>graphs</p>
         </div>
         <div>
-            <p>{{ .Orphans }}</p>
+            <h2>{{ .Orphans }}</h2>
             <p>orphans</p>
         </div>
     </section>
