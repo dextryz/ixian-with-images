@@ -50,17 +50,20 @@ body {
 
 input[type=search] {
     width: 750px;
+    border: 2px solid transparent; /* required to mock outline, so layout does not shift */
     padding: 8px 20px 8px 20px;
-    border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 16px;
     background: var(--clr-dark);
     color: var(--clr-text);
 }
 
 input[type=search]:focus {
-    background: var(--clr-dark);
-    outline: 1px solid var(--clr-pink);
+    /*outline: 1px solid var(--clr-pink);*/
+    outline: 0;
+    background:
+        linear-gradient(to top, var(--clr-dark), var(--clr-dark)) padding-box,
+        linear-gradient(to top, var(--clr-pink), var(--clr-red)) border-box;
 }
 
 main {
