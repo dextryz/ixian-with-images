@@ -12,13 +12,13 @@
 
 <body hx-boost="true">
 
-    <form class="search-bar"
+    <form class="search-form"
         hx-get="/events"
         hx-target="#cards"
         hx-swap="innerHTML">
 
-        <section>
-        <input name="search" type="search" placeholder="Enter NIP-19 entity (npub, nevent, note)"
+        <section class="search-bar">
+        <input name="search" type="search" placeholder="Enter NIP-19 entity"
             hx-get="/validate"
             hx-target="next .message"
             hx-trigger="keyup delay:200ms changed"
@@ -35,7 +35,7 @@
     </main>
 
     <footer>
-        <p>Made with <i class="fas fa-heart"></i> by <a href="https://github.com/dextrouz">dextrouz</a></p>
+        <p>Made with <i class="fas fa-heart"></i> by <a href="https://github.com/dextryz">dextryz</a></p>
     </footer>
 
 </body>

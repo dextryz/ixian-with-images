@@ -41,29 +41,38 @@ body {
     line-height: 1.5;
 }
 
-.search-bar {
+.search-form {
     display: flex;
     justify-content: center;
     background: var(--clr-black);
     padding: 2rem 2rem 0rem 2rem;
 }
 
-.search-bar section {
+.search-bar {
     display: flex;
     flex-flow: column wrap;
+    flex: 1; /* Allows the input to grow and fill available space */
     align-items: left;
     gap: 0.5rem;
+    max-width: 800px;
 }
 
 input[type=search] {
     outline: 0;
-    width: 750px;
     border: 2px solid transparent; /* required to mock outline, so layout does not shift */
     padding: 8px 20px 8px 20px;
     border-radius: 8px;
     background: var(--clr-dark);
     font-size: 16px;
     color: var(--clr-text);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .search-bar {
+        flex-basis: 100%; /* Makes both items take full width on smaller screens */
+        margin: 5px 0; /* Adjusts margin for a stacked layout */
+    }
 }
 
 input[type=search]:focus {
