@@ -301,7 +301,7 @@ func (s *Repository) pullArticle(id string) (*nostr.Event, error) {
 
 	f := nostr.Filter{
 		Ids:   []string{id},
-		Kinds: []uint32{30026},
+		Kinds: []uint32{30023},
 		Limit: 1,
 	}
 
