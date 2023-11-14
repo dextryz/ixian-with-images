@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/ffiat/nostr"
+	"github.com/dextryz/nostr"
 	"github.com/gorilla/mux"
 )
 

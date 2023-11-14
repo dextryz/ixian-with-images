@@ -9,7 +9,7 @@ import (
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 
-	"github.com/ffiat/nostr"
+	"github.com/dextryz/nostr"
 )
 
 const limit = 100
