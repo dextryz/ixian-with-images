@@ -45,7 +45,7 @@ body {
     display: flex;
     justify-content: center;
     background: var(--clr-black);
-    padding: 2rem 2rem 0rem 2rem;
+    padding: 2rem;
 }
 
 .search-bar {
@@ -68,7 +68,7 @@ input[type=search] {
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 20em) {
     .search-bar {
         flex-basis: 100%; /* Makes both items take full width on smaller screens */
         margin: 5px 0; /* Adjusts margin for a stacked layout */
@@ -97,7 +97,7 @@ main {
 
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
     gap: 2rem;
     background: var(--clr-black);
 }
