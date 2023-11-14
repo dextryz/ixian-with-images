@@ -9,6 +9,8 @@
 
 * {
     margin: 0;
+    padding: 0;
+    line-height: 1.5;
 }
 
 input, button, textarea, select {
@@ -38,7 +40,6 @@ body {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 16px;
     background: var(--clr-black);
-    line-height: 1.5;
 }
 
 .search-bar {
@@ -82,7 +83,7 @@ input[type=search]:focus {
 
 main {
     display: block;
-    padding: 3rem;
+    padding: 1rem;
     background: var(--clr-black);
 }
 
@@ -105,7 +106,7 @@ main {
 .article img {
     width: 100%;
     height: 50vh;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
     object-fit: cover;
     mask-image: linear-gradient(black, transparent);
 }
@@ -182,7 +183,7 @@ a:hover {
     flex: 1;
     position: relative;
     gap: 1.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 img.card-thumbnail {
@@ -312,7 +313,7 @@ footer i {
     display: flex;
     flex-wrap: wrap;
     gap: 4rem;
-    padding: 3rem 0rem 0rem 0rem;
+    padding: 0rem 0rem 0rem 0rem;
 }
 
 .data > * {
