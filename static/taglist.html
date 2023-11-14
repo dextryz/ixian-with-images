@@ -1,0 +1,35 @@
+<div class="tags-container">
+    {{ range . }}
+    <article class="tag-card">
+
+        <img class="card-thumbnail" src="{{ .Image }}" />
+
+        <div class="card-body">
+
+            <header class="card-header"
+                hx-get="article/{{ .Id }}"
+                hx-push-url="true"
+                hx-target="body"
+                hx-swap="outerHTML">
+
+                {{ .Title }}
+            </header>
+
+            <section class="card-profile"
+                hx-get="profile/{{ .Id }}"
+                hx-push-url="true"
+                hx-target="body"
+                hx-swap="outerHTML">
+
+                <img src="{{ .Profile.Picture }}" />
+
+                <div>
+                    <b class="author-name">{{ .Profile.Name }}</b>
+                    <time datetime> {{ .CreatedAt }} </time>
+                </div>
+            </section>
+        </div>
+    </article>
+    {{ end }}
+</div>
+
