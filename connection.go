@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/ffiat/nostr"
+	"github.com/dextryz/nostr"
 	"github.com/gorilla/websocket"
 )
 
@@ -75,7 +75,7 @@ func (s *Connection) Listen() error {
 
 			case req := <-s.reqStream:
 
-                log.Printf("REQ sent to relays: %#v", req)
+				log.Printf("REQ sent to relays: %#v", req)
 
 				// Marshal to a slice of bytes ready for transmission.
 				bytes, err := json.Marshal(req)

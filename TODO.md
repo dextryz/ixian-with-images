@@ -1,9 +1,14 @@
-- [ ] Search NIP-05 profiles using HTMX active search
-- [ ] Manage hyper links in event content
-- [ ] Public key verification
-- [ ] Add event ID in smaller and greyed out text
 - [X] Add list of relays to local config
 - [X] POST public key to server
 - [X] Pull events from relay list
 - [X] Add styling to event content
 - [X] Sort events to timeline view
+- [ ] Search NIP-05 profiles using HTMX active search
+- [ ] Manage hyper links in event content
+- [ ] Public key verification
+- [ ] Add event ID in smaller and greyed out text
+- [ ] Make card multi-clickable
+- [ ] Add profile page
+- [ ] Pull hashtag list page 
+- [ ] Add cyan border highlight on focus in search bar
+- [ ] Update NIP-21 valdiation in search bar
