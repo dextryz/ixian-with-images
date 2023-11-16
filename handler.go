@@ -22,6 +22,8 @@ type Handler struct {
 
 func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
 
+    log.Println("Requesting hashtag articles")
+
 	vars := mux.Vars(r)
     hashtag := vars["ht"]
 
@@ -32,11 +34,20 @@ func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
     }
 
     cards := []*Note{}
+
     for _, a := range articles {
+
+        p, err := s.repository.ProfileByArticle(a.Id)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
         n := &Note{
             Article: a,
-            Profile: &Profile{},
+            Profile: p,
         }
+
         cards = append(cards, n)
     }
 

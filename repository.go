@@ -89,6 +89,16 @@ func (s *Repository) Profile(pubkey string) (*Profile, error) {
 	return profile, nil
 }
 
+func (s *Repository) ProfileByArticle(id string) (*Profile, error) {
+
+    profile, err := s.db.queryProfileByArticle(id)
+	if err != nil {
+		return nil, err
+	}
+
+    return profile, nil
+}
+
 // Retrieve article from local cache.
 func (s *Repository) Article(id string) (*Article, error) {
 

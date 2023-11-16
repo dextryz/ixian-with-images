@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"time"
+	"fmt"
 
 	"github.com/dextryz/nostr"
 
@@ -41,7 +42,9 @@ type Article struct {
 
 type Db struct {
 	*sql.DB
-	QueryLimit int
+    QueryIdLimit int
+    QueryAuthorLimit int
+    QueryTagLimit int
 }
 
 func (s *Db) Close() {
@@ -140,7 +143,9 @@ func NewSqlite(database string) *Db {
 
 	return &Db{
 		DB:         db,
-		QueryLimit: 100,
+		QueryIdLimit: 500,
+		QueryAuthorLimit: 10,
+		QueryTagLimit: 10,
 	}
 }
 
@@ -299,6 +304,40 @@ func (s *Db) insertAndAssociateTag(ctx context.Context, noteId string, tagName s
 	return nil
 }
 
+func (s *Db) QueryArticles(ctx context.Context, filter nostr.Filter) ([]*Article, error) {
+
+    articles := []*Article{}
+
+    // 1. Search by IDs
+
+    if filter.Ids != nil {
+        if len(filter.Ids) > s.QueryIdLimit {
+            return nil, fmt.Errorf("requested articles exceeds ID limit of %d", s.QueryIdLimit)
+        }
+    }
+
+    // 2. Search by PubKeys
+
+    if filter.Authors != nil {
+        if len(filter.Ids) > s.QueryAuthorLimit {
+            return nil, fmt.Errorf("authors exceeds limit of %d", s.QueryAuthorLimit)
+        }
+
+    }
+
+    // 3. Search by Tags
+
+    for _, tags := range filter.Tags {
+        if len(tags) > s.QueryTagLimit {
+            return nil, fmt.Errorf("tags exceeds limit of %d", s.QueryTagLimit)
+        }
+    }
+
+    // 4. Search by Content
+
+    return articles, nil
+}
+
 func (s *Db) queryProfileByPubkey(pubkey string) (*Profile, error) {
 
 	rows := s.DB.QueryRow(`SELECT * FROM profile WHERE pubkey = ?`, pubkey)
@@ -377,4 +416,23 @@ func (s *Db) queryArticleByProfile(pubkey string) error {
 	}
 
 	return nil
+}
+
+func (s *Db) queryProfileByArticle(id string) (*Profile, error) {
+
+	rows := s.DB.QueryRow(`
+        SELECT n.* FROM profile n
+        JOIN article_profile nt ON n.pubkey = nt.pubkey
+        JOIN article t ON nt.article_id = t.article_id
+        WHERE t.article_id = ?
+    `, id)
+
+    var p Profile
+
+    err := rows.Scan(&p.PubKey, &p.Name, &p.About, &p.Website, &p.Banner, &p.Picture, &p.Identifier)
+    if err != nil {
+        return nil, err
+    }
+
+	return &p, nil
 }

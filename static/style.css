@@ -228,7 +228,7 @@ img.card-thumbnail {
 .card-profile img {
     width: 55px;
     height: 55px;
-    border-radius: 72% 28% 73% 27% / 28% 48% 52% 72%;
+    border-radius: 50%;
     transition: border-radius 200ms ease-in-out;
     border: 0px solid black;
 }
@@ -238,7 +238,7 @@ time {
 }
 
 .card-profile img:hover {
-    border-radius: 50%;
+    border-radius: 10px;
 }
 
 .author-name {
