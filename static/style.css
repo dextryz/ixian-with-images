@@ -3,6 +3,19 @@
   https://www.joshwcomeau.com/css/custom-css-reset/
 */
 
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/Geist/Geist-Thin.otf') format('truetype');
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('../fonts/Geist/Geist-Bold.otf') format('truetype');
+    font-weight: bold;
+}
+
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -37,7 +50,7 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 body {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Geist';
     font-size: 16px;
     background: var(--clr-black);
 }

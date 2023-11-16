@@ -56,6 +56,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	r.PathPrefix("/fonts/").Handler(http.StripPrefix("/fonts/", http.FileServer(http.Dir("./fonts"))))
 
 	r.HandleFunc("/", handler.Home).Methods("GET")
 	r.HandleFunc("/validate", handler.Validate).Methods("GET")
