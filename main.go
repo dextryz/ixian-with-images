@@ -41,10 +41,12 @@ func main() {
 		websockets = append(websockets, cc)
 	}
 
+	db := NewSqlite("nostr.db")
+	defer db.Close()
+
 	repository := Repository{
-		db:       make(map[string]*Article),
-		hashtags: make(map[string][]string),
-		ws:       websockets,
+		db: db,
+		ws: websockets,
 	}
 
 	handler := Handler{
@@ -58,8 +60,8 @@ func main() {
 	r.HandleFunc("/ixian", handler.Home).Methods("GET")
 	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
-	r.HandleFunc("/tag/{tag:[a-zA-Z0-9]+}", handler.Tag).Methods("GET")
-	r.HandleFunc("/profile/{id:[a-zA-Z0-9]+}", handler.Profile).Methods("GET")
+	r.HandleFunc("/hashtag/{ht:[a-zA-Z0-9]+}", handler.Tag).Methods("GET")
+	r.HandleFunc("/profile/{pk:[a-zA-Z0-9]+}", handler.Profile).Methods("GET")
 	r.HandleFunc("/article/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 	r.HandleFunc("/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 

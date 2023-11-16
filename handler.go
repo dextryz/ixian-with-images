@@ -11,11 +11,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Data struct {
-	Events      []*nostr.Event
-	SearchQuery string
-	Error       string
-	Invalid     bool
+type Note struct {
+	Article *Article
+	Profile *Profile
 }
 
 type Handler struct {
@@ -25,19 +23,22 @@ type Handler struct {
 func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
+    hashtag := vars["ht"]
 
-	cards := []*Article{}
+    articles, err := s.repository.ArticleByTag(hashtag)
+    if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	// THis id is noteID from NIP-21
-	for _, nid := range s.repository.hashtags[vars["tag"]] {
-
-		a, err := s.repository.Article(nid)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		cards = append(cards, a)
-	}
+    cards := []*Note{}
+    for _, a := range articles {
+        n := &Note{
+            Article: a,
+            Profile: &Profile{},
+        }
+        cards = append(cards, n)
+    }
 
 	tmpl, err := template.ParseFiles("static/taglist.html")
 	if err != nil {
@@ -51,17 +52,18 @@ func (s *Handler) Tag(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
+    pubkey := vars["pk"]
 
-	// TODO: For now prefix should only be 'note'
-	_, event, err := nostr.DecodeBech32(vars["id"])
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	_, pubkey, err := nostr.DecodeBech32(vars["pk"])
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	a, err := s.repository.Article(event)
+    log.Printf("Pulling profile with pubkey: %s", pubkey)
+
+	profile, err := s.repository.Profile(pubkey)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -78,23 +80,23 @@ func (s *Handler) Profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, a.Profile)
+	tmpl.Execute(w, profile)
 }
 
 func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
+    id := vars["id"]
 
-	// TODO: For now prefix should only be 'note'
-	_, event, err := nostr.DecodeBech32(vars["id"])
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	// TODO: For now prefix should only be 'note'
+// 	_, event, err := nostr.DecodeBech32(vars["id"])
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	a, err := s.repository.Article(event)
+	article, err := s.repository.Article(id)
 	if err != nil {
-		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -105,7 +107,7 @@ func (s *Handler) Article(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, a)
+	tmpl.Execute(w, article)
 }
 
 func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
@@ -116,8 +118,8 @@ func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	articles := []*Article{}
-	err = tmpl.ExecuteTemplate(w, "home.html", articles)
+	notes := []*Note{}
+	err = tmpl.ExecuteTemplate(w, "home.html", notes)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
 	}
@@ -146,7 +148,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("no npub provided")
 	}
 
-	articles := []*Article{}
+	notes := []*Note{}
 
 	if strings.HasPrefix(search, nostr.UriEvent) {
 
@@ -164,13 +166,17 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			t, v := value[0], value[1]
 
 			if t == "p" {
-				notes, err := s.repository.FindArticles(v)
+				profile, articles, err := s.repository.FindArticles(v)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				for _, n := range notes {
-					articles = append(articles, n)
+				for _, a := range articles {
+					n := &Note{
+						Article: a,
+						Profile: profile,
+					}
+					notes = append(notes, n)
 				}
 			}
 		}
@@ -187,12 +193,19 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		articles, err = s.repository.FindArticles(pk)
+		profile, articles, err := s.repository.FindArticles(pk)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		for _, a := range articles {
+			n := &Note{
+				Article: a,
+				Profile: profile,
+			}
+			notes = append(notes, n)
+		}
 	}
 
 	tmpl, err := template.ParseFiles("static/card.html")
@@ -201,5 +214,5 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, articles)
+	tmpl.Execute(w, notes)
 }

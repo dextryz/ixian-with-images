@@ -4,23 +4,23 @@
 
 <article class="article-card">
 
-    <img class="card-thumbnail" width="300" height="200" src="{{ .Image }}" />
+    <img class="card-thumbnail" width="300" height="200" src="{{ .Article.Image }}" />
 
     <div class="card-body">
 
         <header class="card-header"
-            hx-get="article/{{ .Id }}"
+            hx-get="article/{{ .Article.Id }}"
             hx-push-url="true"
             hx-target="body"
             hx-swap="outerHTML">
 
-            {{ .Title }}
+            {{ .Article.Title }}
         </header>
 
         <div class="card-tags">
-            {{ range .Tags }}
+            {{ range .Article.HashTags }}
                 <h2 class="card-tag"
-                    hx-get="tag/{{ . }}"
+                    hx-get="hashtag/{{ . }}"
                     hx-push-url="true"
                     hx-target="body"
                     hx-swap="outerHTML">
@@ -31,7 +31,7 @@
         </div>
 
         <section class="card-profile"
-            hx-get="profile/{{ .Id }}"
+            hx-get="profile/{{ .Profile.PubKey }}"
             hx-push-url="true"
             hx-target="body"
             hx-swap="outerHTML">
@@ -40,7 +40,7 @@
 
             <div>
                 <b class="author-name">{{ .Profile.Name }}</b>
-                <time datetime> {{ .CreatedAt }} </time>
+                <time datetime> {{ .Article.PublishedAt }} </time>
             </div>
         </section>
     </div>
