@@ -57,12 +57,12 @@ func main() {
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	r.HandleFunc("/ixian", handler.Home).Methods("GET")
+	r.HandleFunc("/", handler.Home).Methods("GET")
 	r.HandleFunc("/validate", handler.Validate).Methods("GET")
 	r.HandleFunc("/events", handler.ListEvents).Methods("GET")
 	r.HandleFunc("/hashtag/{ht:[a-zA-Z0-9]+}", handler.Tag).Methods("GET")
-	r.HandleFunc("/profile/{pk:[a-zA-Z0-9]+}", handler.Profile).Methods("GET")
-	r.HandleFunc("/article/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
+	r.HandleFunc("/profile/{npub:[a-zA-Z0-9]+}", handler.Profile).Methods("GET")
+	r.HandleFunc("/article/{nid:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 	r.HandleFunc("/{id:[a-zA-Z0-9]+}", handler.Article).Methods("GET")
 
 	server := &http.Server{

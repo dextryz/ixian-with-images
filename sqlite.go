@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"time"
-	"fmt"
 
 	"github.com/dextryz/nostr"
 
@@ -16,6 +16,7 @@ import (
 var ErrDupEvent = errors.New("duplicate: event already exists")
 var ErrDupProfile = errors.New("duplicate: profile already exists")
 
+// User face domain language, therefore contains NIP-19 encodings.
 type Profile struct {
 	PubKey     string
 	Name       string
@@ -30,7 +31,7 @@ type Profile struct {
 // it explicit what is supported and what is not. We are flattening a general NIP-23 event.
 // Store both content for reference. Also makes it more explicit. Principle of Explicivity
 type Article struct {
-	Id          string
+	Id          string // NIP-19 (note1...)
 	Image       string
 	Title       string
 	Summary     string
@@ -42,9 +43,10 @@ type Article struct {
 
 type Db struct {
 	*sql.DB
-    QueryIdLimit int
-    QueryAuthorLimit int
-    QueryTagLimit int
+	QueryLimit       int
+	QueryIdLimit     int
+	QueryAuthorLimit int
+	QueryTagLimit    int
 }
 
 func (s *Db) Close() {
@@ -142,17 +144,18 @@ func NewSqlite(database string) *Db {
 	}
 
 	return &Db{
-		DB:         db,
-		QueryIdLimit: 500,
+		DB:               db,
+		QueryLimit:       500,
+		QueryIdLimit:     10,
 		QueryAuthorLimit: 10,
-		QueryTagLimit: 10,
+		QueryTagLimit:    10,
 	}
 }
 
-func (s *Db) StoreProfile(ctx context.Context, p *nostr.Profile, pubkey string) (*Profile, error) {
+func (s *Db) StoreProfile(ctx context.Context, p *nostr.Profile, npub string) (*Profile, error) {
 
 	profile := &Profile{
-		PubKey:     pubkey,
+		PubKey:     npub,
 		Name:       p.Name,
 		About:      p.About,
 		Website:    p.Website,
@@ -182,16 +185,22 @@ func (s *Db) StoreArticle(ctx context.Context, e *nostr.Event) (*Article, error)
 	// Format time.Time to "yyyy-mm-dd"
 	createdAt := t.Format("2006-01-02")
 
-	// 	// Encode NIP-01 event id to NIP-19 note id
-	// 	id, err := nostr.EncodeNote(e.Id)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	// Encode NIP-01 event id to NIP-19 note id
+	id, err := nostr.EncodeNote(e.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Encode NIP-01 pubkey to NIP-19 npub
+	npub, err := nostr.EncodePublicKey(e.PubKey)
+	if err != nil {
+		return nil, err
+	}
 
 	a := &Article{
-		Id:          e.Id,
+		Id:          id,
 		MdContent:   e.Content,
-		HtmlContent: e.Content,
+		HtmlContent: mdToHtml(e.Content),
 		PublishedAt: createdAt,
 	}
 
@@ -211,12 +220,7 @@ func (s *Db) StoreArticle(ctx context.Context, e *nostr.Event) (*Article, error)
 		}
 	}
 
-	err := s.insertArticle(ctx, a)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.associateProfile(ctx, a.Id, e.PubKey)
+	err = s.insertArticle(ctx, a)
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +230,11 @@ func (s *Db) StoreArticle(ctx context.Context, e *nostr.Event) (*Article, error)
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	err = s.associateProfile(ctx, a.Id, npub)
+	if err != nil {
+		return nil, err
 	}
 
 	log.Printf("Event (id: %s) stored in repository DB", e.Id)
@@ -306,36 +315,36 @@ func (s *Db) insertAndAssociateTag(ctx context.Context, noteId string, tagName s
 
 func (s *Db) QueryArticles(ctx context.Context, filter nostr.Filter) ([]*Article, error) {
 
-    articles := []*Article{}
+	articles := []*Article{}
 
-    // 1. Search by IDs
+	// 1. Search by IDs
 
-    if filter.Ids != nil {
-        if len(filter.Ids) > s.QueryIdLimit {
-            return nil, fmt.Errorf("requested articles exceeds ID limit of %d", s.QueryIdLimit)
-        }
-    }
+	if filter.Ids != nil {
+		if len(filter.Ids) > s.QueryIdLimit {
+			return nil, fmt.Errorf("requested articles exceeds ID limit of %d", s.QueryIdLimit)
+		}
+	}
 
-    // 2. Search by PubKeys
+	// 2. Search by PubKeys
 
-    if filter.Authors != nil {
-        if len(filter.Ids) > s.QueryAuthorLimit {
-            return nil, fmt.Errorf("authors exceeds limit of %d", s.QueryAuthorLimit)
-        }
+	if filter.Authors != nil {
+		if len(filter.Ids) > s.QueryAuthorLimit {
+			return nil, fmt.Errorf("authors exceeds limit of %d", s.QueryAuthorLimit)
+		}
 
-    }
+	}
 
-    // 3. Search by Tags
+	// 3. Search by Tags
 
-    for _, tags := range filter.Tags {
-        if len(tags) > s.QueryTagLimit {
-            return nil, fmt.Errorf("tags exceeds limit of %d", s.QueryTagLimit)
-        }
-    }
+	for _, tags := range filter.Tags {
+		if len(tags) > s.QueryTagLimit {
+			return nil, fmt.Errorf("tags exceeds limit of %d", s.QueryTagLimit)
+		}
+	}
 
-    // 4. Search by Content
+	// 4. Search by Content
 
-    return articles, nil
+	return articles, nil
 }
 
 func (s *Db) queryProfileByPubkey(pubkey string) (*Profile, error) {
@@ -348,21 +357,18 @@ func (s *Db) queryProfileByPubkey(pubkey string) (*Profile, error) {
 		return nil, err
 	}
 
-	log.Println("Found profile by pubkey:", p)
-
 	return &p, nil
 }
 
-func (s *Db) queryArticleById(tag string) (*Article, error) {
+func (s *Db) queryArticleById(nid string) (*Article, error) {
 
-	rows := s.DB.QueryRow(`SELECT * FROM article WHERE article_id = ?`, tag)
+	rows := s.DB.QueryRow(`SELECT * FROM article WHERE article_id = ?`, nid)
 
 	var a Article
 	err := rows.Scan(&a.Id, &a.Image, &a.Title, &a.Summary, &a.MdContent, &a.HtmlContent, &a.PublishedAt)
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Found Note by ID:", a)
 
 	return &a, nil
 }
@@ -380,14 +386,14 @@ func (s *Db) queryArticleByTag(tag string) ([]*Article, error) {
 	}
 	defer rows.Close()
 
-    articles := []*Article{}
+	articles := []*Article{}
 	for rows.Next() {
 		var a Article
 		err := rows.Scan(&a.Id, &a.Image, &a.Title, &a.Summary, &a.MdContent, &a.HtmlContent, &a.PublishedAt)
 		if err != nil {
 			return nil, err
 		}
-        articles = append(articles, &a)
+		articles = append(articles, &a)
 	}
 
 	return articles, nil
@@ -427,12 +433,12 @@ func (s *Db) queryProfileByArticle(id string) (*Profile, error) {
         WHERE t.article_id = ?
     `, id)
 
-    var p Profile
+	var p Profile
 
-    err := rows.Scan(&p.PubKey, &p.Name, &p.About, &p.Website, &p.Banner, &p.Picture, &p.Identifier)
-    if err != nil {
-        return nil, err
-    }
+	err := rows.Scan(&p.PubKey, &p.Name, &p.About, &p.Website, &p.Banner, &p.Picture, &p.Identifier)
+	if err != nil {
+		return nil, err
+	}
 
 	return &p, nil
 }
