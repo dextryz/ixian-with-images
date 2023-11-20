@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: 'Geist';
-    src: url('../fonts/Geist/Geist-Thin.otf') format('truetype');
+    src: url('../fonts/Geist/Geist-Light.otf') format('truetype');
     font-weight: normal;
 }
 
@@ -61,24 +61,29 @@ main {
     background: var(--clr-black);
 }
 
-.search-form {
-    display: flex;
-    flex-flow: column wrap;
+.search {
+    display: flex:
+    flow-direction: column;
     align-items: center;
+    max-width: 800px; /* Maximum width of the container */
+    margin: 0 auto; /* Center the container */
+    padding: 1rem; /* Optional padding */
+}
+
+.search-container {
+    display: flex; /* Enable Flexbox */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space between items */
+}
+
+.small {
+    flex-grow: 1; /* Allows the search bar to grow and take up available space */
+    padding: 1rem; /* Optional margin to separate from the button */
 }
 
 .search-bar {
-    display: flex;
-    flex-flow: column wrap;
-    align-items: start;
-    background: var(--clr-black);
-    padding: 1rem;
-    gap: 0.5rem;
-}
-
-input[type=search] {
+    flex-grow: 1; /* Allows the search bar to grow and take up available space */
     outline: 0;
-    width: 750px;
     border: 2px solid transparent; /* required to mock outline, so layout does not shift */
     padding: 8px 20px 8px 20px;
     border-radius: 8px;
@@ -87,7 +92,7 @@ input[type=search] {
     color: var(--clr-text);
 }
 
-input[type=search]:focus {
+.search-bar:focus {
     background:
         linear-gradient(to top, var(--clr-dark), var(--clr-dark)) padding-box,
         linear-gradient(to top, var(--clr-cyan), var(--clr-blue)) border-box;

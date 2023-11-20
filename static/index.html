@@ -11,21 +11,21 @@
 
 <body hx-boost="true">
 
-    <form class="search-form"
+    <div class="search">
+    <form class="search-container"
         hx-get="/events"
         hx-target="#cards"
         hx-swap="innerHTML">
 
-        <section class="search-bar">
-            <input name="search" type="search" placeholder="Enter npub"
-                hx-get="/validate"
-                hx-target="next .message"
-                hx-trigger="keyup delay:200ms changed"
-            />
-            <small class="message"></small>
-        </section>
-
+        <input class="search-bar" name="search" type="search" placeholder="Enter npub"
+            hx-get="/validate"
+            hx-target="next .message"
+            hx-trigger="keyup delay:200ms changed"
+        />
     </form>
+    <small class="message"></small>
+
+    </div>
 
     <main>
         <div id="cards" class="cards">

@@ -145,8 +145,9 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+        // Add text to show valid if you want to.
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`<span class="message success">Valid entity</span>`))
+		w.Write([]byte(`<span class="message success"> </span>`))
 	}
 }
 
