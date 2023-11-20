@@ -1,8 +1,6 @@
 # Ixian
 
-Overview: View [nostr](https://nostr.com/) articles using NIP-21 URI schemes.
-
-Goal: Minimal web client to view long-form notes for your personal knowledge repository.
+Visit [http://ixian.me:8081](http://ixian.me:8081). Past a NIP-19 npub key and enter. You'll get a list of your Long-Form articles. You'll be able to follow NIP-27 **Note References** in article content. For an example, use my npub14ge829c4pvgx24c35qts3sv82wc2xwcmgng93tzp6d52k9de2xgqq0y4jk.
 
 ## Stack
 
@@ -10,7 +8,7 @@ Goal: Minimal web client to view long-form notes for your personal knowledge rep
 - [HTMX](https://htmx.org/)
 - CSS
 
-## Setup
+## Developers
 
 1. Create a new profile configuration.
 
@@ -20,12 +18,12 @@ export CONFIG_NOSTR=$HOME/.config/nostr/alice.json
 touch $CONFIG_NOSTR
 ```
 
-2. Install the [Ixian CLI](https://github.com/dextrouz/ixian-cli) tool to help you manage your profile from the terminal.
+2. Install the [Ixian CLI](https://github.com/dextyz/lemon) tool to help you manage your profile from the terminal.
 
 3. Before you can fetch notes you have to add at least one relay.
 
 ```shell
-ix relay -add wss://relay.damus.io/
+lemon relay -add wss://relay.damus.io/
 ```
 
 4. Run the server
@@ -34,8 +32,4 @@ ix relay -add wss://relay.damus.io/
 make run
 ```
 
-5. Navigate to [http://localhost:8081/ixian](http://localhost:8081/ixian)
-
-## Examples
-
-![Timeline](docs/npub.png)
+5. Navigate to [http://localhost:8081](http://localhost:8081)
