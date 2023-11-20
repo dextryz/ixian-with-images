@@ -244,20 +244,16 @@ func (s *Db) StoreArticle(ctx context.Context, e *nostr.Event) (*Article, error)
 
 func (s *Db) insertProfile(ctx context.Context, p *Profile) error {
 
-	eventSql := "INSERT INTO profile (pubkey, name, about, website, banner, picture, identifier) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	eventSql := "INSERT OR IGNORE INTO profile (pubkey, name, about, website, banner, picture, identifier) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 
 	res, err := s.DB.ExecContext(ctx, eventSql, p.PubKey, p.Name, p.About, p.Website, p.Banner, p.Picture, p.Identifier)
 	if err != nil {
 		return err
 	}
 
-	nr, err := res.RowsAffected()
+	_, err = res.RowsAffected()
 	if err != nil {
 		return err
-	}
-
-	if nr == 0 {
-		return ErrDupProfile
 	}
 
 	return nil
@@ -265,20 +261,16 @@ func (s *Db) insertProfile(ctx context.Context, p *Profile) error {
 
 func (s *Db) insertArticle(ctx context.Context, a *Article) error {
 
-	eventSql := "INSERT INTO article (article_id, image, title, summary, md_content, html_content, published_at) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	eventSql := "INSERT OR IGNORE INTO article (article_id, image, title, summary, md_content, html_content, published_at) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 
 	res, err := s.DB.ExecContext(ctx, eventSql, a.Id, a.Image, a.Title, a.Summary, a.MdContent, a.HtmlContent, a.PublishedAt)
 	if err != nil {
 		return err
 	}
 
-	nr, err := res.RowsAffected()
+	_, err = res.RowsAffected()
 	if err != nil {
 		return err
-	}
-
-	if nr == 0 {
-		return ErrDupEvent
 	}
 
 	return nil
@@ -287,7 +279,7 @@ func (s *Db) insertArticle(ctx context.Context, a *Article) error {
 func (s *Db) associateProfile(ctx context.Context, noteId string, pubkey string) error {
 
 	// Associate profile with article
-	_, err := s.DB.ExecContext(ctx, "INSERT INTO article_profile (article_id, pubkey) VALUES (?, ?)", noteId, pubkey)
+	_, err := s.DB.ExecContext(ctx, "INSERT OR IGNORE INTO article_profile (article_id, pubkey) VALUES (?, ?)", noteId, pubkey)
 	if err != nil {
 		return err
 	}
@@ -305,7 +297,7 @@ func (s *Db) insertAndAssociateTag(ctx context.Context, noteId string, tagName s
 	}
 
 	// Associate tag with note
-	_, err = s.DB.ExecContext(ctx, "INSERT INTO article_hashtag (article_id, hashtag_name) VALUES (?, ?)", noteId, tagName)
+	_, err = s.DB.ExecContext(ctx, "INSERT OR IGNORE INTO article_hashtag (article_id, hashtag_name) VALUES (?, ?)", noteId, tagName)
 	if err != nil {
 		return err
 	}

@@ -145,7 +145,7 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-        // Add text to show valid if you want to.
+		// Add text to show valid if you want to.
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`<span class="message success"> </span>`))
 	}
@@ -191,6 +191,7 @@ func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
 		profile, articles, err := s.repository.FindArticles(search)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
