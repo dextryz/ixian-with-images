@@ -22,14 +22,14 @@ type Handler struct {
 
 func (s *Handler) Home(w http.ResponseWriter, r *http.Request) {
 
-	tmpl, err := template.ParseFiles("static/home.html", "static/card.html")
+	tmpl, err := template.ParseFiles("static/index.html", "static/card.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	notes := []*Note{}
-	err = tmpl.ExecuteTemplate(w, "home.html", notes)
+	err = tmpl.ExecuteTemplate(w, "index.html", notes)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
 	}
@@ -132,21 +132,22 @@ func (s *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 
 		prefix, _, err := nostr.DecodeBech32(pk)
 
-		if prefix[0] != 'n' {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`<span class="message error">Start with (npub, note)</span>`))
-			return
-		}
-
 		if err != nil {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`<span class="message error">Invalid entity</span>`))
 			return
 		}
-	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`<span class="message success">Valid entity</span>`))
+		if prefix[0] != 'n' {
+			log.Println("start with npub")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`<span class="message error">Start with npub</span>`))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`<span class="message success">Valid entity</span>`))
+	}
 }
 
 func (s *Handler) ListEvents(w http.ResponseWriter, r *http.Request) {
