@@ -18,12 +18,12 @@ export CONFIG_NOSTR=$HOME/.config/nostr/alice.json
 touch $CONFIG_NOSTR
 ```
 
-2. Install the [Ixian CLI](https://github.com/dextyz/lemon) tool to help you manage your profile from the terminal.
+2. Install the [Ixian CLI](https://github.com/dextyz/nix) tool to help you manage your profile from the terminal.
 
 3. Before you can fetch notes you have to add at least one relay.
 
 ```shell
-lemon relay -add wss://relay.damus.io/
+nix relay -add wss://relay.damus.io/
 ```
 
 4. Run the server
