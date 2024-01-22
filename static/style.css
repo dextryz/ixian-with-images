@@ -109,7 +109,7 @@ main {
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(20em, 1fr));
-    gap: 2rem;
+    gap: 1rem;
     background: var(--clr-black);
 }
 
@@ -119,7 +119,8 @@ main {
     align-items: center;
     gap: 1rem;
     background: var(--clr-black);
-    padding-bottom: 5rem;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
 }
 
 .article img {
@@ -187,13 +188,6 @@ a:hover {
     border-style: solid;
     border-color: #586e75;
     text-align: left;
-    transition: 0.2s;
-    transition: 1000ms;
-}
-
-.article-card:hover {
-    transform: translateY(-1rem);
-    transition: 250ms;
 }
 
 .card-body {
@@ -201,7 +195,7 @@ a:hover {
     flex-flow: column;
     flex: 1;
     position: relative;
-    gap: 1.5rem;
+    gap: 1rem;
     padding: 1rem;
 }
 

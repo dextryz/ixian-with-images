@@ -26,6 +26,8 @@ var (
 
 func main() {
 
+    log.Println("Starting...")
+
 	cfg, err := DecodeConfig(CONFIG_NOSTR)
 	if err != nil {
 		log.Fatalf("unable to decode local cfg: %v", err)
