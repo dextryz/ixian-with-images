@@ -188,13 +188,6 @@ a:hover {
     border-style: solid;
     border-color: #586e75;
     text-align: left;
-    transition: 0.2s;
-    transition: 1000ms;
-}
-
-.article-card:hover {
-    transform: translateY(-0.5rem);
-    transition: 250ms;
 }
 
 .card-body {
